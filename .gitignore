@@ -1,0 +1,17 @@
+# Local instructions for the coding assistant
+/AGENTS.md
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# Temporary files and logs
+/tmp/
+*.log
+
+# Local editor and operating system files
+/.idea/
+/.vscode/
+Thumbs.db
+.DS_Store
