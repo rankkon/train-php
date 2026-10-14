@@ -1,0 +1,247 @@
+@font-face {
+    font-family: 'Noto Sans JP';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../font/NotoSansJP-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans JP';
+    font-style: normal;
+    font-weight: 700;
+    src: url('../font/NotoSansJP-Bold.ttf') format('truetype');
+}
+
+.login-page .site-header {
+    position: fixed;
+    width: 100%;
+    height: 75px;
+    left: 0px;
+    top: 0px;
+    z-index: 1;
+    overflow: hidden;
+    background: #007EC6;
+    color: #FFFFFF;
+}
+
+.login-page .header-text {
+    position: absolute;
+    width: 0px;
+    height: 35px;
+    left: 233px;
+    top: 26px;
+    font-weight: 400;
+    font-size: 24px;
+    white-space: pre;
+}
+
+.login-page .site-brand {
+    position: absolute;
+    width: 158px;
+    height: 48px;
+    left: 42px;
+    top: 15px;
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 45.12px;
+    white-space: nowrap;
+}
+
+.login-page .site-description {
+    position: absolute;
+    width: 240px;
+    height: 29px;
+    left: 233px;
+    top: 26px;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 27.272px;
+    white-space: nowrap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../font/Inter-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    src: url('../font/Inter-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url('../font/Roboto-Bold.ttf') format('truetype');
+}
+
+.dashboard-page .dashboard-header {
+    position: fixed;
+    width: 100%;
+    height: 75px;
+    left: 0px;
+    top: 0px;
+    background: #007EC6;
+}
+
+.dashboard-page .dashboard-header {
+    z-index: 2;
+}
+
+.dashboard-page .dashboard-description {
+    position: absolute;
+    width: 240px;
+    height: 29px;
+    left: 233px;
+    top: 26px;
+    font-family: 'Noto Sans JP';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 29px;
+    color: #FFFFFF;
+}
+
+.dashboard-page .dashboard-brand {
+    position: absolute;
+    width: 158px;
+    height: 48px;
+    left: 26px;
+    top: 8px;
+    font-family: 'Noto Sans JP';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 48px;
+    color: #FFFFFF;
+}
+
+.dashboard-page .dashboard-sidebar {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 8px 0px;
+    position: fixed;
+    width: 269px;
+    min-width: 112px;
+    max-width: 280px;
+    height: calc(100vh - 76px);
+    left: 0px;
+    top: 76px;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+
+.dashboard-page .dashboard-sidebar {
+    z-index: 1;
+}
+
+.dashboard-page .dashboard-menu-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    width: 269px;
+    height: 336px;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
+.dashboard-page .dashboard-menu-item {
+    margin: 0;
+    border: 0;
+    background: transparent;
+}
+
+.dashboard-page .dashboard-menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px 20px;
+    width: 269px;
+    height: 56px;
+    flex: none;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dashboard-page .dashboard-menu-active {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px 20px;
+    width: 269px;
+    height: 56px;
+    background: #007EC6;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dashboard-page .dashboard-menu-state {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 12px;
+    gap: 12px;
+    width: 229px;
+    height: 56px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dashboard-page .dashboard-menu-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    width: 205px;
+    height: 24px;
+    flex: none;
+    order: 1;
+    flex-grow: 1;
+}
+
+.dashboard-page .dashboard-menu-label {
+    width: 205px;
+    height: 24px;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.5px;
+    color: #1D1B20;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dashboard-page .dashboard-menu-active .dashboard-menu-label {
+    color: #FFEBEB;
+}
+
+.dashboard-page .dashboard-menu-spacer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    width: 269px;
+    height: 56px;
+    flex: none;
+    align-self: stretch;
+    flex-grow: 0;
+}

@@ -1,6 +1,6 @@
 # Local instructions for the coding assistant
 /AGENTS.md
-
+/status.md
 # Local configuration and credentials
 .env
 .env.*
