@@ -60,7 +60,7 @@ $showLoginError = $usernameError || $passwordError;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập | Sanshin</title>
-    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/common.css?v=<?= filemtime(__DIR__ . '/css/common.css') ?>">
     <link rel="stylesheet" href="css/login.css">
 </head>
 <body class="login-page">
