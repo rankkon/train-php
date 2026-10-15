@@ -1,67 +1,12 @@
-<?php
-session_start();
-
-if (isset($_SESSION['user_id'])) {
-    header('Location: dashboard.php');
-    exit;
-}
-
-require_once __DIR__ . '/index.php';
-
-$username = '';
-$password = '';
-$usernameError = false;
-$passwordError = false;
-
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-    if (isset($_POST['action']) && $_POST['action'] === 'clear') {
-        header('Location: login.php', true, 303);
-        exit;
-    }
-
-    if (isset($_POST['username']) && is_string($_POST['username'])) {
-        $username = trim($_POST['username']);
-    }
-
-    if (isset($_POST['password']) && is_string($_POST['password'])) {
-        $password = $_POST['password'];
-    }
-
-
-    $usernameError = $username === '';
-    $passwordError = $password === '';
-
-    if (!$usernameError && !$passwordError) {
-        $statement = $db->prepare('SELECT id, password_hash, status FROM users WHERE username = ? LIMIT 1');
-        $statement->bind_param('s', $username);
-        $statement->execute();
-        $user = $statement->get_result()->fetch_assoc();
-        $statement->close();
-
-        if (!$user || (int) $user['status'] !== 1) {
-            $usernameError = true;
-        } elseif (!hash_equals($user['password_hash'], md5($password))) {
-            $passwordError = true;
-        } else {
-
-            session_regenerate_id(true);
-            $_SESSION['user_id'] = (int) $user['id'];
-            header('Location: dashboard.php', true, 303);
-            exit;
-        }
-    }
-}
-
-$showLoginError = $usernameError || $passwordError;
-?>
+<?php require dirname(__DIR__) . '/logic/login_logic.php'; ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập | Sanshin</title>
-    <link rel="stylesheet" href="css/common.css?v=<?= filemtime(__DIR__ . '/css/common.css') ?>">
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="../css/common.css?v=<?= filemtime(dirname(__DIR__) . '/css/common.css') ?>">
+    <link rel="stylesheet" href="../css/login.css">
 </head>
 <body class="login-page">
     <div class="login-surface">

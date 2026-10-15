@@ -1,54 +1,12 @@
-<?php
-session_start();
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
-
-require_once __DIR__ . '/index.php';
-
-$dashboardHeaders = [
-    'STT',
-    'Người dùng',
-    'Loại đơn',
-    'Ngày lập',
-    'Trạng thái',
-    'Ngày duty',
-    'Mô tả',
-];
-
-$leaveStatuses = [
-    0 => 'Đơn mới',
-    1 => 'Đã duyệt',
-    2 => 'Đã hủy',
-];
-
-$leaveTypes = [
-    1 => 'Đơn nghỉ phép',
-    2 => 'Đơn cấp vật tư máy móc',
-    3 => 'Đơn thay đổi giờ làm',
-    4 => 'Đơn xin thanh toán công tác phí',
-];
-
-$leaves = $db->query('
-    SELECT users.full_name, `leave`.leave_type,
-           `leave`.created_at, `leave`.status, `leave`.start_date,
-           `leave`.end_date, `leave`.title
-    FROM `leave`
-    JOIN users ON users.id = `leave`.user_id
-    ORDER BY `leave`.created_at DESC, `leave`.id DESC
-    LIMIT 30
-')->fetch_all(MYSQLI_ASSOC);
-?>
+<?php require dirname(__DIR__) . '/logic/dashboard_logic.php'; ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Sanshin</title>
-    <link rel="stylesheet" href="css/common.css?v=<?= filemtime(__DIR__ . '/css/common.css') ?>">
-    <link rel="stylesheet" href="css/dashboard.css?v=<?= filemtime(__DIR__ . '/css/dashboard.css') ?>">
+    <link rel="stylesheet" href="../css/common.css?v=<?= filemtime(dirname(__DIR__) . '/css/common.css') ?>">
+    <link rel="stylesheet" href="../css/dashboard.css?v=<?= filemtime(dirname(__DIR__) . '/css/dashboard.css') ?>">
 </head>
 <body class="dashboard-page">
     <div class="dashboard-surface">
@@ -72,18 +30,7 @@ $leaves = $db->query('
                 <?php endforeach; ?>
             </div>
 
-            <?php foreach ($leaves as $rowIndex => $leave): ?>
-                <?php
-                $dashboardRow = [
-                    (string) ($rowIndex + 1),
-                    $leave['full_name'],
-                    $leaveTypes[$leave['leave_type']],
-                    substr($leave['created_at'], 0, 10),
-                    $leaveStatuses[$leave['status']],
-                    $leave['end_date'],
-                    $leave['title'],
-                ];
-                ?>
+            <?php foreach ($dashboardRows as $dashboardRow): ?>
                 <div class="dashboard-row" role="row">
                     <?php foreach ($dashboardRow as $columnIndex => $value): ?>
                         <div class="dashboard-cell dashboard-cell-<?= $columnIndex ?>" role="cell">

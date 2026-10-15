@@ -1,0 +1,418 @@
+/* Selected from status.md: 4.1. Man hinh them moi don.
+   Keep Figma sizes and colors; use document flow so validation messages fit. */
+.leave-create-page {
+    min-height: 100vh;
+    background: #FFFFFF;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #000000;
+}
+
+.leave-create,
+.leave-create * {
+    box-sizing: border-box;
+}
+
+.leave-create-page .leave-create {
+    margin-left: 296px;
+    margin-right: 32px;
+    padding: 96px 0 43px;
+}
+
+.leave-form-title {
+    margin: 0;
+    font: inherit;
+    line-height: 17px;
+}
+
+.leave-form {
+    display: flex;
+    flex-direction: column;
+    width: 613px;
+    max-width: calc(100% - 93px);
+    min-height: 790px;
+    margin: 58px 0 0 93px;
+}
+
+.leave-form-field {
+    display: grid;
+    grid-template-columns: 133px minmax(0, 480px);
+    align-items: start;
+    margin-bottom: 22px;
+}
+
+.leave-form-field > label {
+    padding-top: 10px;
+    line-height: 19px;
+}
+
+.leave-form .required-marker {
+    margin-left: 4px;
+    color: #BD0101;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.leave-form-field input,
+.leave-form-field textarea,
+.leave-form-field select {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    font: inherit;
+    line-height: 20px;
+    color: #000000;
+}
+
+.leave-form-content {
+    margin-bottom: 28px;
+}
+
+.leave-form-content textarea {
+    height: 94px;
+    resize: vertical;
+}
+
+.leave-form-select {
+    margin-bottom: 29px;
+}
+
+.leave-select-control {
+    position: relative;
+    width: 240px;
+    max-width: 100%;
+    height: 40px;
+}
+
+.leave-select-control select {
+    appearance: none;
+    padding: 8px 40px 8px 16px;
+    background: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: #1E1E1E;
+}
+
+/* Figma: 16px icon slot, 12px from the right edge. */
+.leave-select-control::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    width: 16px;
+    height: 16px;
+    transform: translateY(-50%);
+    background: #1E1E1E;
+    clip-path: polygon(25% 30%, 50% 55%, 75% 30%, 82.5% 37.5%, 50% 70%, 17.5% 37.5%);
+    pointer-events: none;
+}
+
+.leave-form-date input,
+.leave-date-control,
+.leave-form-attachment input,
+.leave-file-control {
+    width: 189px;
+    max-width: 100%;
+}
+
+.leave-date-control {
+    position: relative;
+}
+
+.leave-form-date input::-webkit-calendar-picker-indicator {
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.leave-file-control {
+    position: relative;
+    height: 40px;
+}
+
+.leave-file-control input {
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.leave-file-control input::file-selector-button {
+    display: none;
+}
+
+.leave-file-control input:invalid {
+    color: transparent;
+}
+
+/* Show the session filename until a replacement is selected in the file input. */
+.leave-file-name {
+    position: absolute;
+    top: 50%;
+    right: 36px;
+    left: 11px;
+    transform: translateY(-50%);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    line-height: 20px;
+    pointer-events: none;
+}
+
+.leave-file-control input:valid ~ .leave-file-name {
+    display: none;
+}
+
+/* Center the arrow and tray on the same 12px axis inside the 24px icon. */
+.leave-upload-icon {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.leave-upload-icon::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #000000;
+    clip-path: polygon(12px 4px, 18px 10px, 16.5px 11.5px, 13px 8px, 13px 16px, 11px 16px, 11px 8px, 7.5px 11.5px, 6px 10px);
+}
+
+.leave-upload-icon::after {
+    content: '';
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    left: 4px;
+    height: 6px;
+    border: 2px solid #000000;
+    border-top: 0;
+    border-radius: 0 0 2px 2px;
+}
+
+.leave-form-field > p {
+    grid-column: 2;
+    margin: 12px 0 0;
+    overflow-wrap: anywhere;
+    line-height: 20px;
+}
+
+.leave-form .leave-input-error {
+    border-color: #F90A0A;
+    outline-color: #F90A0A;
+}
+
+.leave-form-error {
+    margin: 0 0 22px;
+    color: #F90A0A;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.leave-form-error::before {
+    content: '※';
+}
+
+.leave-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 33px;
+    margin-top: auto;
+    padding: 72px 0 0 7px;
+}
+
+.leave-form-actions button,
+.leave-save-buttons button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 220px;
+    max-width: 100%;
+    height: 50px;
+    padding: 4px 24px;
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 19px;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.leave-form-next {
+    background: #007EC6;
+}
+
+.leave-form-clear {
+    background: #E2005C;
+}
+
+.leave-form-next:hover {
+    background: #006EAD;
+}
+
+.leave-form-next:active {
+    background: #005F96;
+}
+
+.leave-form-clear:hover {
+    background: #C60050;
+}
+
+.leave-form-clear:active {
+    background: #AA0045;
+}
+
+/* status.md, 4.2: gray fields and a blue attachment filename without an input. */
+.leave-form-confirm input:disabled,
+.leave-form-confirm textarea:disabled,
+.leave-form-confirm select:disabled {
+    background-color: rgba(204, 204, 204, 0.5);
+    color: #000000;
+    opacity: 1;
+}
+
+.leave-form-confirm select:disabled {
+    color: #1E1E1E;
+}
+
+.leave-form-confirm textarea:disabled {
+    resize: none;
+}
+
+.leave-form-confirm input[type="date"] {
+    padding-right: 36px;
+}
+
+.leave-form-confirm input::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+/* Disabled date inputs hide the native calendar; retain the Figma icon. */
+.leave-calendar-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(#000000, #000000) 7px 3px / 2px 4px no-repeat,
+        linear-gradient(#000000, #000000) 15px 3px / 2px 4px no-repeat;
+    pointer-events: none;
+}
+
+.leave-calendar-icon::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    right: 3px;
+    bottom: 2px;
+    left: 3px;
+    border: 2px solid #000000;
+    border-radius: 2px;
+    background: linear-gradient(#000000, #000000) 0 2px / 100% 2px no-repeat;
+}
+
+.leave-calendar-icon::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 7px;
+    width: 2px;
+    height: 2px;
+    background: #000000;
+    box-shadow: 4px 0 #000000, 8px 0 #000000,
+        0 4px #000000, 4px 4px #000000, 8px 4px #000000;
+}
+
+.leave-confirm-attachment {
+    min-height: 40px;
+    padding: 10px 0 13px;
+    color: #00AAFF;
+    font-size: 14px;
+    line-height: 17px;
+    overflow-wrap: anywhere;
+}
+
+.leave-save-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.leave-save-dialog {
+    width: 440px;
+    max-width: 100%;
+    padding: 24px;
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    background: #FFFFFF;
+}
+
+.leave-save-dialog h2 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 26px;
+}
+
+.leave-save-dialog p {
+    margin: 16px 0 24px;
+    line-height: 22px;
+}
+
+.leave-save-buttons {
+    display: flex;
+    gap: 16px;
+}
+
+.leave-save-buttons button {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 1050px) {
+    .leave-form {
+        max-width: 100%;
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 760px) {
+    .leave-create-page .leave-create {
+        margin-right: 20px;
+        margin-left: 289px;
+    }
+
+    .leave-form-field {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 8px;
+    }
+
+    .leave-form-field > label {
+        padding-top: 0;
+    }
+
+    .leave-form-field > p {
+        grid-column: 1;
+        margin-top: 4px;
+    }
+
+    .leave-form-actions {
+        padding-left: 0;
+    }
+}

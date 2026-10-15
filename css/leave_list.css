@@ -1,0 +1,295 @@
+/* Selected styles from status.md: List don, Table, Button, Input, Pagination.
+   Use document flow instead of fixed Figma coordinates so rows extend the page. */
+.leave-list-page,
+.leave-list-page * {
+    box-sizing: border-box;
+}
+
+.leave-list-page {
+    min-height: 100vh;
+    background: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    color: #1E1E1E;
+}
+
+.leave-list-page .leave-list {
+    margin-left: 318px;
+    margin-right: 45px;
+    padding: 102px 0 42px;
+}
+
+.leave-list-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 24px;
+    min-height: 40px;
+    margin-bottom: 14px;
+}
+
+.leave-search {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+    margin: 0;
+}
+
+.leave-search label {
+    width: 216px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 140%;
+}
+
+.leave-search input {
+    width: 272px;
+    min-width: 240px;
+    height: 40px;
+    padding: 12px 16px;
+    background: #FFFFFF;
+    border: 1px solid #D9D9D9;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 16px;
+    line-height: 100%;
+    color: #1E1E1E;
+}
+
+.leave-search input::placeholder {
+    color: #B3B3B3;
+}
+
+.leave-search-button,
+.leave-add {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex: none;
+    gap: 8px;
+    height: 40px;
+    padding: 12px;
+    border: 0;
+    border-radius: 8px;
+    color: #F5F5F5;
+    font: inherit;
+    font-size: 16px;
+    line-height: 100%;
+}
+
+.leave-search-button {
+    width: 93px;
+    margin-left: 20px;
+    background: #FF7700;
+    cursor: pointer;
+}
+
+.leave-search-button:hover {
+    background: #E56A00;
+}
+
+.leave-search-button:active {
+    background: #CC5F00;
+}
+
+.leave-add {
+    width: 133px;
+    background: #007EC6;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.leave-add:hover {
+    background: #006EAD;
+}
+
+.leave-add:active {
+    background: #005F96;
+}
+
+.leave-table-container {
+    width: 100%;
+    overflow-x: auto;
+    background: #FFFFFF;
+    border: 1px solid #B9B9B9;
+    border-radius: 4px;
+}
+
+.leave-table {
+    width: 100%;
+    min-width: 1131px;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 12px;
+    line-height: 130%;
+    color: #000000;
+}
+
+.leave-table th,
+.leave-table td {
+    height: 36px;
+    padding: 9px 12px;
+    border-right: 1px solid #B9B9B9;
+    border-bottom: 1px solid #B9B9B9;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.leave-table th {
+    background: rgba(0, 0, 0, 0.06);
+    font-weight: 600;
+}
+
+.leave-table th:nth-child(1) { width: 64px; }
+.leave-table th:nth-child(2) { width: 130px; }
+.leave-table th:nth-child(3) { width: 240px; }
+.leave-table th:nth-child(4) { width: 104px; }
+.leave-table th:nth-child(5) { width: 105px; }
+.leave-table th:nth-child(6) { width: 188px; }
+
+.leave-table th:first-child,
+.leave-table td:first-child {
+    text-overflow: clip;
+}
+
+.leave-table th:last-child,
+.leave-table td:last-child {
+    border-right: 0;
+}
+
+.leave-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.leave-table td:nth-child(5),
+.leave-title {
+    font-weight: 600;
+}
+
+.leave-status-0 {
+    background: #91FF98;
+}
+
+.leave-status-2 {
+    background: #FFB5B5;
+}
+
+.leave-table td:last-child {
+    padding: 0 12px;
+}
+
+.leave-description {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 35px;
+}
+
+.leave-title {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.leave-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 7px;
+    margin-left: auto;
+}
+
+.leave-actions button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 70px;
+    height: 25px;
+    padding: 4px 12px;
+    border: 0;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 100%;
+    color: #F5F5F5;
+    cursor: pointer;
+}
+
+.leave-approve {
+    background: #14AE5C;
+}
+
+.leave-cancel {
+    background: #EC221F;
+}
+
+.leave-approve:hover {
+    background: #11994F;
+}
+
+.leave-approve:active {
+    background: #0E8042;
+}
+
+.leave-cancel:hover {
+    background: #D51D1A;
+}
+
+.leave-cancel:active {
+    background: #B81816;
+}
+
+.leave-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    margin-top: 27px;
+    font-size: 16px;
+    line-height: 100%;
+}
+
+.leave-pagination > a,
+.leave-pagination > span {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #1E1E1E;
+    text-decoration: none;
+}
+
+.leave-pagination .leave-page-previous {
+    min-width: 113px;
+}
+
+.leave-pagination .leave-page-next {
+    min-width: 84px;
+}
+
+.leave-pagination [aria-current="page"] {
+    background: #2C2C2C;
+    color: #F5F5F5;
+}
+
+.leave-pagination [aria-disabled="true"] {
+    color: #757575;
+    opacity: 0.5;
+}
+
+.leave-pagination .leave-page-gap {
+    padding: 8px 16px;
+    font-weight: 700;
+}
