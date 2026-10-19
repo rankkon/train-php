@@ -1,4 +1,9 @@
 <?php
+require_once __DIR__ . '/functions/const.php';
+require_once __DIR__ . '/functions/message.php';
+require_once __DIR__ . '/functions/helpers.php';
+
+// Nếu đã đăng nhập thì chuyển sang Dashboard.
 session_start();
 
 if (isset($_SESSION['user_id'])) {
@@ -14,7 +19,14 @@ $password = '';
 $usernameError = false;
 $passwordError = false;
 
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+$requestMethod = 'GET';
+if (isset($_SERVER['REQUEST_METHOD'])) {
+    $requestMethod = $_SERVER['REQUEST_METHOD'];
+}
+
+// Chỉ kiểm tra đăng nhập khi người dùng gửi form.
+if ($requestMethod === 'POST') {
+    //Reload lại trang khi người dùng nhấn nút Clear.
     if (isset($_POST['action']) && $_POST['action'] === 'clear') {
         header('Location: ../views/login.php', true, 303);
         exit;
@@ -31,14 +43,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $usernameError = $username === '';
     $passwordError = $password === '';
 
+    // Nếu không có trường dữ liệu nào thiếu thì kiểm tra thông tin đăng nhập.
     if (!$usernameError && !$passwordError) {
         $user = findUserForLogin($db, $username);
 
-        if (!$user || (int) $user['status'] !== 1) {
+        if (!$user || (int) $user['status'] !== USER_STATUS_ACTIVE) {
             $usernameError = true;
         } elseif (!hash_equals($user['password_hash'], md5($password))) {
             $passwordError = true;
         } else {
+            // Đổi mã session sau khi đăng nhập thành công.
             session_regenerate_id(true);
             $_SESSION['user_id'] = (int) $user['id'];
             header('Location: ../views/dashboard.php', true, 303);

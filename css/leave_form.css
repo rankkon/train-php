@@ -1,7 +1,8 @@
-/* Selected from status.md: 4.1. Man hinh them moi don.
-   Keep Figma sizes and colors; use document flow so validation messages fit. */
+/* Mục 4.1 trong status.md: màn hình thêm mới đơn.
+   Giữ kích thước và màu theo mẫu; cho form giãn xuống khi có thông báo lỗi. */
 .leave-create-page {
     min-height: 100vh;
+    margin: 0;
     background: #FFFFFF;
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 14px;
@@ -99,7 +100,7 @@
     color: #1E1E1E;
 }
 
-/* Figma: 16px icon slot, 12px from the right edge. */
+/* Mũi tên chọn: khung 16px, cách cạnh phải 12px theo Figma. */
 .leave-select-control::after {
     content: '';
     position: absolute;
@@ -151,7 +152,7 @@
     color: transparent;
 }
 
-/* Show the session filename until a replacement is selected in the file input. */
+/* Hiện tên file trong session đến khi người dùng chọn file thay thế. */
 .leave-file-name {
     position: absolute;
     top: 50%;
@@ -169,7 +170,7 @@
     display: none;
 }
 
-/* Center the arrow and tray on the same 12px axis inside the 24px icon. */
+/* Dùng hai phần CSS để vẽ mũi tên tải lên và khay bên dưới. */
 .leave-upload-icon {
     position: absolute;
     top: 50%;
@@ -200,6 +201,7 @@
     border-radius: 0 0 2px 2px;
 }
 
+/* Lỗi nằm dưới ô nhập, có chữ và viền màu đỏ. */
 .leave-form-field > p {
     grid-column: 2;
     margin: 12px 0 0;
@@ -223,6 +225,7 @@
     content: '※';
 }
 
+/* Nhóm nút ở cuối form. */
 .leave-form-actions {
     display: flex;
     flex-wrap: wrap;
@@ -231,8 +234,7 @@
     padding: 72px 0 0 7px;
 }
 
-.leave-form-actions button,
-.leave-save-buttons button {
+.leave-form-actions button {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -275,7 +277,7 @@
     background: #AA0045;
 }
 
-/* status.md, 4.2: gray fields and a blue attachment filename without an input. */
+/* Mục 4.2 trong status.md: ô xác nhận màu xám, tên file màu xanh. */
 .leave-form-confirm input:disabled,
 .leave-form-confirm textarea:disabled,
 .leave-form-confirm select:disabled {
@@ -300,7 +302,7 @@
     display: none;
 }
 
-/* Disabled date inputs hide the native calendar; retain the Figma icon. */
+/* Ô ngày bị khóa sẽ ẩn lịch mặc định nên vẽ lại biểu tượng theo mẫu. */
 .leave-calendar-icon {
     position: absolute;
     top: 8px;
@@ -345,46 +347,7 @@
     overflow-wrap: anywhere;
 }
 
-.leave-save-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 3;
-    display: grid;
-    place-items: center;
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.4);
-}
-
-.leave-save-dialog {
-    width: 440px;
-    max-width: 100%;
-    padding: 24px;
-    border: 1px solid #CCCCCC;
-    border-radius: 4px;
-    background: #FFFFFF;
-}
-
-.leave-save-dialog h2 {
-    margin: 0;
-    font-size: 18px;
-    line-height: 26px;
-}
-
-.leave-save-dialog p {
-    margin: 16px 0 24px;
-    line-height: 22px;
-}
-
-.leave-save-buttons {
-    display: flex;
-    gap: 16px;
-}
-
-.leave-save-buttons button {
-    flex: 1;
-    min-width: 0;
-}
-
+/* Thu hẹp form khi màn hình không đủ chiều ngang. */
 @media (max-width: 1050px) {
     .leave-form {
         max-width: 100%;

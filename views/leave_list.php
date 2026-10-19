@@ -1,12 +1,15 @@
-<?php require dirname(__DIR__) . '/logic/leave_list_logic.php'; ?>
+<?php
+// Đọc danh sách đơn, từ khóa tìm kiếm và các link phân trang.
+require dirname(__DIR__) . '/logic/leave_list_logic.php';
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách đơn | Sanshin</title>
-    <link rel="stylesheet" href="../css/common.css?v=<?= filemtime(dirname(__DIR__) . '/css/common.css') ?>">
-    <link rel="stylesheet" href="../css/leave_list.css?v=<?= filemtime(dirname(__DIR__) . '/css/leave_list.css') ?>">
+    <link rel="stylesheet" href="../css/common.css?v=<?= escapeHtml(filemtime(dirname(__DIR__) . '/css/common.css')) ?>">
+    <link rel="stylesheet" href="../css/leave_list.css?v=<?= escapeHtml(filemtime(dirname(__DIR__) . '/css/leave_list.css')) ?>">
 </head>
 <body class="leave-list-page">
     <header class="site-header">
@@ -17,6 +20,7 @@
     <?php require __DIR__ . '/sidebar.php'; ?>
 
     <main class="leave-list">
+        <!-- Form GET đưa từ khóa lên URL để giữ lại khi chuyển trang. -->
         <div class="leave-list-toolbar">
             <form method="get" action="leave_list.php" class="leave-search">
                 <label for="leave-search">Tên user/Loại đơn/Nội dung</label>
@@ -26,8 +30,9 @@
             <a href="leave_create.php" class="leave-add">Thêm mới đơn</a>
         </div>
 
+        <!-- Nút Sửa mở form; Duyệt/Hủy vẫn là nút tĩnh. -->
         <div class="leave-table-container">
-            <table class="leave-table" aria-label="Danh sách đơn">
+            <table class="leave-table">
                 <thead>
                     <tr>
                         <th scope="col">STT</th>
@@ -41,11 +46,11 @@
                 </thead>
                 <tbody>
                     <?php if (!$leaves): ?>
-                        <tr><td colspan="7">Không có đơn phù hợp.</td></tr>
+                        <tr><td colspan="7"><?= escapeHtml(MSG_NO_LEAVES_FOUND) ?></td></tr>
                     <?php endif; ?>
                     <?php foreach ($leaves as $leave): ?>
-                        <tr class="leave-row leave-status-<?= (int) $leave['status'] ?>">
-                            <td><?= $leave['number'] ?></td>
+                        <tr class="leave-row leave-status-<?= escapeHtml((int) $leave['status']) ?>">
+                            <td><?= escapeHtml($leave['number']) ?></td>
                             <td><?= escapeHtml($leave['full_name']) ?></td>
                             <td><?= escapeHtml($leave['type_name']) ?></td>
                             <td><?= escapeHtml($leave['created_date']) ?></td>
@@ -54,10 +59,17 @@
                             <td>
                                 <div class="leave-description">
                                     <span class="leave-title" title="<?= escapeHtml($leave['title']) ?>"><?= escapeHtml($leave['title']) ?></span>
-                                    <?php if ($leave['show_actions']): ?>
+                                    <?php if ($leave['show_actions'] || $leave['show_edit']): ?>
                                         <div class="leave-actions">
-                                            <button type="button" class="leave-approve">Duyệt</button>
-                                            <button type="button" class="leave-cancel">Hủy</button>
+                                            <?php if ($leave['show_actions']): ?>
+                                                <button type="button" class="leave-approve">Duyệt</button>
+                                            <?php endif; ?>
+                                            <?php if ($leave['show_edit']): ?>
+                                                <a href="leave_create.php?id=<?= escapeHtml($leave['id']) ?>" class="leave-edit">Sửa</a>
+                                            <?php endif; ?>
+                                            <?php if ($leave['show_actions']): ?>
+                                                <button type="button" class="leave-cancel">Hủy</button>
+                                            <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -68,11 +80,12 @@
             </table>
         </div>
 
-        <nav class="leave-pagination" aria-label="Phân trang danh sách đơn">
+        <!-- Phân trang -->
+        <nav class="leave-pagination">
             <?php if ($previousPageUrl !== null): ?>
-                <a href="<?= escapeHtml($previousPageUrl) ?>" class="leave-page-previous" aria-label="Trang trước">← Previous</a>
+                <a href="<?= escapeHtml($previousPageUrl) ?>" class="leave-page-previous">← Previous</a>
             <?php else: ?>
-                <span class="leave-page-previous" aria-disabled="true">← Previous</span>
+                <span class="leave-page-previous leave-page-disabled">← Previous</span>
             <?php endif; ?>
 
             <?php foreach ($pagination as $link): ?>
@@ -80,16 +93,16 @@
                     <span class="leave-page-gap">…</span>
                 <?php endif; ?>
                 <?php if ($link['current']): ?>
-                    <span aria-current="page"><?= $link['number'] ?></span>
+                    <span class="leave-page-current"><?= escapeHtml($link['number']) ?></span>
                 <?php else: ?>
-                    <a href="<?= escapeHtml($link['url']) ?>"><?= $link['number'] ?></a>
+                    <a href="<?= escapeHtml($link['url']) ?>"><?= escapeHtml($link['number']) ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
 
             <?php if ($nextPageUrl !== null): ?>
-                <a href="<?= escapeHtml($nextPageUrl) ?>" class="leave-page-next" aria-label="Trang sau">Next →</a>
+                <a href="<?= escapeHtml($nextPageUrl) ?>" class="leave-page-next">Next →</a>
             <?php else: ?>
-                <span class="leave-page-next" aria-disabled="true">Next →</span>
+                <span class="leave-page-next leave-page-disabled">Next →</span>
             <?php endif; ?>
         </nav>
     </main>

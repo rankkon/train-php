@@ -1,3 +1,4 @@
+/* Thanh tiêu đề trên màn hình đăng nhập. */
 .login-page .site-header {
     position: fixed;
     width: 100%;
@@ -8,17 +9,6 @@
     overflow: hidden;
     background: #007EC6;
     color: #FFFFFF;
-}
-
-.login-page .header-text {
-    position: absolute;
-    width: 0px;
-    height: 35px;
-    left: 233px;
-    top: 26px;
-    font-weight: 400;
-    font-size: 24px;
-    white-space: pre;
 }
 
 .login-page .site-brand {
@@ -45,6 +35,7 @@
     white-space: nowrap;
 }
 
+/* Khung form, nhãn và ô nhập theo mẫu Figma. */
 .login-page {
     position: relative;
     min-height: 100vh;
@@ -191,6 +182,7 @@
     white-space: nowrap;
 }
 
+/* Nút đăng nhập và nút xóa trống. */
 .login-page .login-actions button {
     box-sizing: border-box;
     position: absolute;
@@ -262,6 +254,7 @@
     color: rgba(255, 255, 255, 0.87);
 }
 
+/* Thông báo và viền đỏ khi đăng nhập lỗi. */
 .login-page .login-error {
     position: absolute;
     width: 351px;
@@ -279,13 +272,4 @@
 .login-page .login-field input.login-input-error {
     border-color: #F90A0A;
     outline-color: #F90A0A;
-}
-
-.login-page .login-frame {
-    position: absolute;
-    width: 100%;
-    height: 96px;
-    left: 0px;
-    bottom: 0px;
-    overflow: hidden;
 }
