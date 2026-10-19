@@ -1,5 +1,5 @@
 <?php
-// Kiểm tra đăng nhập và chuẩn bị thông báo lỗi cho form.
+
 require dirname(__DIR__) . '/logic/login_logic.php';
 ?>
 <!DOCTYPE html>
@@ -21,7 +21,6 @@ require dirname(__DIR__) . '/logic/login_logic.php';
         <main class="login-container">
             <h1 class="login-title">Sanshin IT Solution</h1>
 
-            <!-- Gửi tên đăng nhập và mật khẩu cho PHP kiểm tra. -->
             <form class="login-form" method="post" action="login.php" novalidate>
                 <div class="login-field login-username">
                     <label for="username">Tên đăng nhập</label>

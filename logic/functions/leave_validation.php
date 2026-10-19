@@ -3,7 +3,7 @@ require_once __DIR__ . '/const.php';
 require_once __DIR__ . '/message.php';
 require_once __DIR__ . '/helpers.php';
 
-// Gọi từng hàm kiểm tra ô nhập, gom lỗi và kiểm tra thứ tự hai ngày.
+// Kiểm tra các trường và thứ tự ngày của đơn.
 function validateLeaveFields($values, $approvers, $leaveTypes, $minimumDate) {
     $messages = [
         'title' => validateLeaveTitle($values['title']),
@@ -26,9 +26,9 @@ function validateLeaveFields($values, $approvers, $leaveTypes, $minimumDate) {
     return $errors;
 }
 
-// Kiểm tra tiêu đề có chữ, đúng UTF-8 và không quá 255 ký tự tiếng Việt.
+// Kiểm tra tiêu đề bắt buộc và giới hạn ký tự.
 function validateLeaveTitle($title) {
-    // mb_* dùng cho tiếng Việt; biểu thức bên dưới nhận biết tiêu đề chỉ có khoảng trắng.
+
     if (!mb_check_encoding($title, 'UTF-8')) {
         return MSG_LEAVE_TITLE_ENCODING;
     }
@@ -41,7 +41,7 @@ function validateLeaveTitle($title) {
     return '';
 }
 
-// Nội dung được để trống nhưng phải đúng UTF-8 và vừa giới hạn TEXT của database.
+// Kiểm tra định dạng và dung lượng nội dung.
 function validateLeaveContent($content) {
     if (!mb_check_encoding($content, 'UTF-8')) {
         return MSG_LEAVE_CONTENT_ENCODING;
@@ -52,22 +52,40 @@ function validateLeaveContent($content) {
     return '';
 }
 
-// Kiểm tra mã người duyệt có nằm trong danh sách được phép chọn hay không.
-function validateLeaveApprover($value, $approvers) {
-    // Chỉ nhận mã số nguyên và phải có trong danh sách người duyệt được phép chọn.
-    $approverId = filter_var($value, FILTER_VALIDATE_INT);
-    foreach ($approvers as $approver) {
-        if ($approverId !== false && $approverId > 0 && (int) $approver['id'] === $approverId) {
-            return '';
-        }
+// Kiểm tra lý do hủy bắt buộc và giới hạn dung lượng.
+function validateLeaveCancelReason($reason) {
+    if (!mb_check_encoding($reason, 'UTF-8')) {
+        return MSG_CANCEL_REASON_ENCODING;
     }
+
+    if (!preg_match('/[^\s\p{Z}]/u', $reason)) {
+        return MSG_CANCEL_REASON_REQUIRED;
+    }
+    if (strlen($reason) > LEAVE_CANCEL_REASON_MAX_BYTES) {
+        return MSG_CANCEL_REASON_TOO_LONG;
+    }
+    return '';
+}
+
+// Kiểm tra người duyệt thuộc danh sách được chọn.
+function validateLeaveApprover($value, $approvers) {
     if (!$approvers) {
         return MSG_APPROVER_UNAVAILABLE;
+    }
+
+    $approverId = filter_var($value, FILTER_VALIDATE_INT);
+    if ($approverId === false || $approverId < 1) {
+        return MSG_APPROVER_REQUIRED;
+    }
+    foreach ($approvers as $approver) {
+        if ((int) $approver['id'] === $approverId) {
+            return '';
+        }
     }
     return MSG_APPROVER_REQUIRED;
 }
 
-// Chỉ nhận mã loại đơn có trong danh sách cố định.
+// Kiểm tra mã loại đơn hợp lệ.
 function validateLeaveType($value, $leaveTypes) {
     foreach ($leaveTypes as $code => $name) {
         if ($value === (string) $code) {
@@ -77,7 +95,7 @@ function validateLeaveType($value, $leaveTypes) {
     return MSG_LEAVE_TYPE_REQUIRED;
 }
 
-// Kiểm tra ngày có thật; chỉ áp dụng ngày tối thiểu khi tạo đơn mới.
+// Kiểm tra ngày hợp lệ và ngày tối thiểu.
 function validateLeaveDate($value, $label, $minimumDate) {
     if ($value === '') {
         return sprintf(MSG_DATE_REQUIRED, mb_strtolower($label, 'UTF-8'));
@@ -91,15 +109,7 @@ function validateLeaveDate($value, $label, $minimumDate) {
     return '';
 }
 
-// Kiểm tra bản nháp đã qua Tiếp theo và mã xác nhận chưa bị thay hoặc hết hiệu lực.
-function validateLeaveConfirmation($draft, $saveToken, $postedSaveToken) {
-    if (!$draft || empty($draft['confirmed']) || $saveToken === '' || !hash_equals($saveToken, $postedSaveToken)) {
-        return MSG_CONFIRMATION_INVALID;
-    }
-    return '';
-}
-
-// Kiểm tra dữ liệu PHP nhận từ ô file trước khi đọc nội dung file tạm.
+// Kiểm tra thông tin file PHP nhận từ form.
 function validateLeaveUpload($file, $maxSize) {
     if (!is_array($file) || !isset($file['name'], $file['error'], $file['tmp_name'], $file['size'])
         || !is_string($file['name']) || !is_string($file['tmp_name'])
@@ -119,9 +129,9 @@ function validateLeaveUpload($file, $maxSize) {
     return '';
 }
 
-// Kiểm tra tên, dung lượng, phần mở rộng và nội dung thật của file.
+// Kiểm tra tên, dung lượng và nội dung thật của file.
 function validateLeaveAttachment($name, $data, $maxSize) {
-    // Không nhận ký tự điều khiển như xuống dòng hoặc ký tự rỗng trong tên file.
+
     if ($name === '' || !mb_check_encoding($name, 'UTF-8')
         || mb_strlen($name, 'UTF-8') > ATTACHMENT_NAME_MAX_LENGTH || preg_match('/[\x00-\x1F\x7F]/', $name)) {
         return sprintf(MSG_ATTACHMENT_NAME_INVALID, ATTACHMENT_NAME_MAX_LENGTH);
@@ -139,7 +149,6 @@ function validateLeaveAttachment($name, $data, $maxSize) {
         return MSG_ATTACHMENT_TYPE_INVALID;
     }
 
-    // finfo đọc định dạng thật của file, không chỉ dựa vào đuôi tên file.
     $fileInfo = new finfo(FILEINFO_MIME_TYPE);
     $mime = $fileInfo->buffer($data);
     if (!in_array($mime, $allowedTypes[$extension], true)) {

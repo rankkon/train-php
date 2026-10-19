@@ -1,5 +1,5 @@
 <?php
-// Xác định mục menu đang được chọn.
+
 require dirname(__DIR__) . '/logic/sidebar_logic.php';
 ?>
 <aside class="sidebar">

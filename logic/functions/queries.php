@@ -2,7 +2,7 @@
 require_once __DIR__ . '/const.php';
 require_once __DIR__ . '/message.php';
 
-// Đọc từng dòng trong queries.sql và lấy đúng đoạn có nhãn -- name: cần dùng.
+// Đọc câu SQL theo nhãn tên.
 function readSql($name) {
     $sql = '';
     $reading = false;
@@ -28,9 +28,7 @@ function readSql($name) {
     return trim($sql);
 }
 
-// prepare tạo câu truy vấn; bind_param điền dữ liệu vào dấu ? một cách an toàn.
-// Trong bind_param: s là chuỗi, i là số nguyên.
-// Tìm tài khoản theo tên đăng nhập để kiểm tra mật khẩu và trạng thái hoạt động.
+// Lấy tài khoản theo tên đăng nhập.
 function findUserForLogin($db, $username) {
     $sql = readSql('login_user');
     $statement = $db->prepare($sql);
@@ -42,7 +40,7 @@ function findUserForLogin($db, $username) {
     return $user;
 }
 
-// Đọc lại tài khoản từ database để dùng quyền và trạng thái hiện tại.
+// Lấy quyền và trạng thái hiện tại của tài khoản.
 function findUserById($db, $userId) {
     $sql = readSql('current_user');
     $statement = $db->prepare($sql);
@@ -54,7 +52,7 @@ function findUserById($db, $userId) {
     return $user;
 }
 
-// Tìm % và _ như ký tự bình thường, không để SQL hiểu thành ký tự đại diện.
+// Chuẩn bị từ khóa tìm kiếm cho LIKE.
 function searchPattern($search) {
     $pattern = str_replace('!', '!!', $search);
     $pattern = str_replace('%', '!%', $pattern);
@@ -62,7 +60,7 @@ function searchPattern($search) {
     return '%' . $pattern . '%';
 }
 
-// Đếm số người dùng phù hợp để tính số trang.
+// Đếm người dùng theo từ khóa.
 function countUsers($db, $search) {
     $where = '';
     if ($search !== '') {
@@ -82,7 +80,7 @@ function countUsers($db, $search) {
     return $total;
 }
 
-// Lấy người dùng trong trang hiện tại, sắp xếp mới nhất trước.
+// Lấy danh sách người dùng theo trang.
 function findUsers($db, $search, $perPage, $offset) {
     $where = '';
     if ($search !== '') {
@@ -106,7 +104,7 @@ function findUsers($db, $search, $perPage, $offset) {
     return $users;
 }
 
-// User chọn manager cùng phòng; manager chọn admin; admin chọn chính mình.
+// Lấy người duyệt phù hợp với quyền và phòng ban.
 function findApprovers($db, $user) {
     if ((int) $user['user_type'] === USER_TYPE_USER) {
         $statement = $db->prepare(readSql('approvers_user'));
@@ -130,7 +128,7 @@ function findApprovers($db, $user) {
     return $approvers;
 }
 
-// FOR UPDATE giữ người thao tác, chủ đơn và người duyệt ổn định trong lúc lưu.
+// Khóa các tài khoản liên quan trong transaction.
 function lockLeaveUsers($db, $userId, $ownerId, $approverId) {
     $statement = $db->prepare(readSql('leave_save_users'));
     $statement->bind_param('iii', $userId, $ownerId, $approverId);
@@ -144,7 +142,7 @@ function lockLeaveUsers($db, $userId, $ownerId, $approverId) {
     return $users;
 }
 
-// Thêm một đơn mới cùng tên và đường dẫn file; chạy trong transaction của saveLeave.
+// Thêm đơn mới và thông tin file đính kèm.
 function insertLeave($db, $userId, $values, $createdAt, $attachmentName, $attachmentPath) {
     $statement = $db->prepare(readSql('leave_insert'));
     $approverId = (int) $values['approver_id'];
@@ -158,7 +156,7 @@ function insertLeave($db, $userId, $values, $createdAt, $attachmentName, $attach
     $statement->close();
 }
 
-// Đọc một đơn theo ID; chỉ khóa dòng khi đang lưu trong transaction.
+// Lấy đơn theo ID và khóa dòng khi cần.
 function findLeaveById($db, $leaveId, $forUpdate = false) {
     $sql = readSql('leave_detail');
     if ($forUpdate) {
@@ -173,7 +171,7 @@ function findLeaveById($db, $leaveId, $forUpdate = false) {
     return $leave;
 }
 
-// Sửa đơn đã có; hàm saveLeave chịu trách nhiệm mở và kết thúc transaction.
+// Cập nhật nội dung và file của đơn.
 function updateLeave($db, $leaveId, $values, $attachmentName, $attachmentPath) {
     $statement = $db->prepare(readSql('leave_update'));
     $approverId = (int) $values['approver_id'];
@@ -187,7 +185,27 @@ function updateLeave($db, $leaveId, $values, $attachmentName, $attachmentPath) {
     $statement->close();
 }
 
-// Đếm số đơn còn dùng file cũ trước khi xóa file sau một lần sửa thành công.
+// Cập nhật trạng thái và thời gian duyệt đơn.
+function approveLeave($db, $leaveId, $approvedTime, $approvedDate) {
+    $statement = $db->prepare(readSql('leave_approve'));
+    $statement->bind_param('ssi', $approvedTime, $approvedDate, $leaveId);
+    $statement->execute();
+    $affectedRows = $statement->affected_rows;
+    $statement->close();
+    return $affectedRows;
+}
+
+// Cập nhật trạng thái, thời gian và lý do hủy.
+function cancelLeave($db, $leaveId, $cancelledTime, $cancelReason) {
+    $statement = $db->prepare(readSql('leave_cancel'));
+    $statement->bind_param('ssi', $cancelledTime, $cancelReason, $leaveId);
+    $statement->execute();
+    $affectedRows = $statement->affected_rows;
+    $statement->close();
+    return $affectedRows;
+}
+
+// Đếm số đơn đang dùng một file.
 function countAttachmentUsage($db, $attachmentPath) {
     $statement = $db->prepare(readSql('attachment_usage'));
     $statement->bind_param('s', $attachmentPath);
@@ -198,7 +216,7 @@ function countAttachmentUsage($db, $attachmentPath) {
     return (int) $row['total'];
 }
 
-// Lấy tối đa 30 đơn mới nhất trong phạm vi phòng ban của tài khoản.
+// Lấy các đơn mới nhất trong phạm vi được xem.
 function findDashboardLeaves($db, $currentUser) {
     $statement = $db->prepare(readSql('dashboard_leaves'));
     $userType = (int) $currentUser['user_type'];
@@ -214,7 +232,7 @@ function findDashboardLeaves($db, $currentUser) {
     return $leaves;
 }
 
-// Tìm tên loại đơn bằng cùng LIKE/collation với các cột văn bản, rồi tạo điều kiện tìm kiếm.
+// Tạo điều kiện tìm kiếm đơn theo từ khóa.
 function leaveSearchWhere($db, $search, $leaveTypes) {
     if ($search === '') {
         return '';
@@ -230,7 +248,6 @@ function leaveSearchWhere($db, $search, $leaveTypes) {
     $statement->execute();
     $result = $statement->get_result();
 
-    // Chỉ đưa mã số từ truy vấn cố định vào SQL; mã 0 dành cho trường hợp không khớp loại nào.
     $typeCodes = [0];
     while ($type = $result->fetch_assoc()) {
         $typeCodes[] = (int) $type['leave_type'];
@@ -240,7 +257,7 @@ function leaveSearchWhere($db, $search, $leaveTypes) {
     return str_replace('{{type_codes}}', implode(',', $typeCodes), readSql('leave_search'));
 }
 
-// Đếm đơn theo cùng điều kiện tìm kiếm và phân quyền với danh sách.
+// Đếm đơn theo phạm vi và từ khóa.
 function countLeaves($db, $currentUser, $search, $searchWhere) {
     $sql = str_replace('{{where}}', $searchWhere, readSql('leave_count'));
     $statement = $db->prepare($sql);
@@ -248,7 +265,7 @@ function countLeaves($db, $currentUser, $search, $searchWhere) {
     $department = (int) $currentUser['department'];
     if ($search !== '') {
         $pattern = searchPattern($search);
-        $statement->bind_param('iissss', $userType, $department, $pattern, $pattern, $pattern, $pattern);
+        $statement->bind_param('iiss', $userType, $department, $pattern, $pattern);
     } else {
         $statement->bind_param('ii', $userType, $department);
     }
@@ -260,7 +277,7 @@ function countLeaves($db, $currentUser, $search, $searchWhere) {
     return $total;
 }
 
-// Lấy đơn của trang hiện tại. LIMIT là số dòng, OFFSET là số dòng bỏ qua.
+// Lấy danh sách đơn theo phạm vi và phân trang.
 function findLeaves($db, $currentUser, $search, $searchWhere, $perPage, $offset) {
     $sql = str_replace('{{where}}', $searchWhere, readSql('leave_list'));
     $statement = $db->prepare($sql);
@@ -268,7 +285,7 @@ function findLeaves($db, $currentUser, $search, $searchWhere, $perPage, $offset)
     $department = (int) $currentUser['department'];
     if ($search !== '') {
         $pattern = searchPattern($search);
-        $statement->bind_param('iissssii', $userType, $department, $pattern, $pattern, $pattern, $pattern, $perPage, $offset);
+        $statement->bind_param('iissii', $userType, $department, $pattern, $pattern, $perPage, $offset);
     } else {
         $statement->bind_param('iiii', $userType, $department, $perPage, $offset);
     }

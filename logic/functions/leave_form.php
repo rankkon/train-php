@@ -2,7 +2,7 @@
 require_once __DIR__ . '/message.php';
 require_once __DIR__ . '/leave_validation.php';
 
-// Giá trị trống dùng khi mở form thêm mới hoặc bấm Xóa trống ở cả hai chế độ.
+// Tạo các giá trị trống cho form đơn.
 function emptyLeaveValues() {
     return [
         'title' => '',
@@ -14,7 +14,7 @@ function emptyLeaveValues() {
     ];
 }
 
-// Chỉ cho đọc hoặc xóa file có thật nằm bên trong thư mục uploads của project.
+// Lấy đường dẫn file hợp lệ trong uploads.
 function leaveAttachmentFullPath($path) {
     $projectRoot = dirname(__DIR__, 2);
     $uploadDirectory = realpath($projectRoot . '/uploads');
@@ -28,14 +28,14 @@ function leaveAttachmentFullPath($path) {
     return $fullPath;
 }
 
-// Đọc file của đơn đang sửa để dùng lại khi người dùng không chọn file thay thế.
+// Đọc dữ liệu file đính kèm đã lưu.
 function readSavedLeaveAttachment($leave, $userId) {
     $fullPath = leaveAttachmentFullPath($leave['attachment_path']);
     if (!$fullPath) {
         return null;
     }
     $data = file_get_contents($fullPath, false, null, 0, ATTACHMENT_MAX_BYTES + 1);
-    if ($data === false || validateLeaveAttachment($leave['attachment_original_name'], $data, ATTACHMENT_MAX_BYTES) !== '') {
+    if ($data === false) {
         return null;
     }
     return [
@@ -46,7 +46,7 @@ function readSavedLeaveAttachment($leave, $userId) {
     ];
 }
 
-// Lấy các ô được phép gửi từ form, giữ giá trị nhập và báo lỗi nếu nhận phải mảng.
+// Đọc giá trị và lỗi kiểu dữ liệu từ form.
 function readLeaveValues($post) {
     $values = emptyLeaveValues();
     $errors = [];
@@ -64,8 +64,7 @@ function readLeaveValues($post) {
     return ['values' => $values, 'errors' => $errors];
 }
 
-// Đọc file mới hoặc dùng lại file đã giữ. Có lỗi file mới thì vẫn giữ file cũ để sửa tiếp.
-// File từ session đã được kiểm tra khi upload hoặc đọc file cũ; lần kiểm tra cuối nằm trong saveLeave.
+// Đọc file mới hoặc giữ file trong session.
 function readLeaveUpload($files, $attachment, $userId, $maxSize) {
     $result = ['attachment' => $attachment, 'error' => ''];
     if (count($files) > 1) {
@@ -105,16 +104,16 @@ function readLeaveUpload($files, $attachment, $userId, $maxSize) {
     return $result;
 }
 
-// Hủy bước xác nhận để quay lại sửa, giữ nguyên nội dung và file trong session.
+// Hủy bước xác nhận và giữ bản nháp.
 function resetLeaveConfirmation() {
-    unset($_SESSION['leave_create_save_token'], $_SESSION['leave_create_save_pending']);
+    unset($_SESSION['leave_create_save_pending']);
     if (!empty($_SESSION['leave_create_draft'])) {
         $_SESSION['leave_create_draft']['confirmed'] = false;
     }
 }
 
-// Xóa bản nháp, file tạm và mã xác nhận khi xóa trống hoặc đã lưu thành công.
+// Xóa bản nháp, file tạm và trạng thái xác nhận.
 function clearLeaveDraft() {
     unset($_SESSION['leave_create_draft'], $_SESSION['leave_create_attachment'],
-        $_SESSION['leave_create_save_token'], $_SESSION['leave_create_save_pending']);
+        $_SESSION['leave_create_save_pending']);
 }

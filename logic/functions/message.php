@@ -1,5 +1,5 @@
 <?php
-// Thông báo chung.
+
 const MSG_DATABASE_CONNECTION_FAILED = 'Không thể kết nối cơ sở dữ liệu.';
 const MSG_METHOD_NOT_ALLOWED = 'Phương thức không được hỗ trợ.';
 const MSG_LIST_READ_ONLY = 'Trang danh sách hiện chỉ hỗ trợ xem và tìm kiếm.';
@@ -11,7 +11,6 @@ const MSG_SQL_NOT_FOUND = 'Không tìm thấy câu SQL: %s';
 const MSG_LEAVE_NOT_FOUND = 'Không tìm thấy đơn cần sửa.';
 const MSG_LEAVE_EDIT_FORBIDDEN = 'Chỉ chủ đơn được sửa khi đơn còn ở trạng thái Đơn mới.';
 
-// Thông báo kiểm tra các ô nhập của đơn.
 const MSG_LEAVE_TITLE_ENCODING = 'Tiêu đề phải là văn bản hợp lệ.';
 const MSG_LEAVE_TITLE_REQUIRED = 'Vui lòng nhập tiêu đề.';
 const MSG_LEAVE_TITLE_TOO_LONG = 'Tiêu đề không được quá %d ký tự.';
@@ -25,7 +24,6 @@ const MSG_DATE_INVALID = '%s không hợp lệ. Định dạng yêu cầu: YYYY-
 const MSG_DATE_IN_PAST = '%s không hợp lệ. Không thể chọn ngày trong quá khứ.';
 const MSG_END_DATE_BEFORE_START = 'Ngày kết thúc phải cùng hoặc sau ngày bắt đầu.';
 
-// Thông báo liên quan đến file đính kèm.
 const MSG_ATTACHMENT_SINGLE_ONLY = 'Chỉ được chọn một tệp đính kèm.';
 const MSG_ATTACHMENT_TOO_LARGE = 'Tệp đính kèm không được quá %d MB.';
 const MSG_ATTACHMENT_UPLOAD_FAILED = 'Tải tệp không thành công. Vui lòng chọn lại tệp.';
@@ -41,16 +39,22 @@ const MSG_ATTACHMENT_IMAGE_INVALID = 'Tệp ảnh bị lỗi hoặc không hợp
 const MSG_ATTACHMENT_PDF_INVALID = 'Tệp PDF không hợp lệ.';
 const MSG_ATTACHMENT_HINT = 'JPG/JPEG, PNG, GIF, WebP, BMP hoặc PDF. Tối đa %d MB.';
 
-// Thông báo ở các bước xác nhận và lưu đơn.
 const MSG_POST_DATA_UNREADABLE = 'Không đọc được dữ liệu gửi lên. Vui lòng kiểm tra tệp đính kèm, tối đa %d MB.';
-const MSG_CSRF_INVALID = 'Phiên gửi form không hợp lệ. Vui lòng thử lại.';
-const MSG_CONFIRMATION_INVALID = 'Phiên xác nhận không còn hợp lệ. Vui lòng nhấn Tiếp theo để kiểm tra lại đơn.';
+const MSG_CONFIRMATION_INVALID = 'Vui lòng nhấn Tiếp theo để kiểm tra đơn trước khi lưu.';
 const MSG_SAVE_CONFIRMATION_REQUIRED = 'Vui lòng nhấn Lưu lại và xác nhận trước khi lưu đơn.';
 const MSG_CONFIRMATION_TITLE = 'Thông báo';
 const MSG_CONFIRM_SAVE = 'Bạn có chắc chắn lưu lại thay đổi ?';
 const MSG_SAVE_FAILED = 'Không thể lưu đơn. Dữ liệu và tệp vẫn được giữ để bạn thử lại.';
 
-// Thông báo danh sách trống và lỗi ghi trong nhật ký máy chủ.
+const MSG_CONFIRM_APPROVE = 'Bạn có chắc chắn duyệt đơn này?';
+const MSG_LEAVE_PROCESS_NOT_FOUND = 'Không tìm thấy đơn cần xử lý.';
+const MSG_LEAVE_PROCESS_FORBIDDEN = 'Bạn không có quyền xử lý đơn này hoặc đơn không còn ở trạng thái Đơn mới.';
+const MSG_CANCEL_REASON_REQUIRED = 'Vui lòng nhập lý do hủy đơn.';
+const MSG_CANCEL_REASON_ENCODING = 'Lý do hủy phải là văn bản hợp lệ.';
+const MSG_CANCEL_REASON_TOO_LONG = 'Lý do hủy vượt giới hạn lưu trữ.';
+const MSG_LEAVE_PROCESS_FAILED = 'Không thể xử lý đơn. Vui lòng thử lại.';
+const MSG_LEAVE_PROCESS_FAILED_LOG = 'Duyệt/hủy đơn thất bại: %s';
+
 const MSG_NO_USERS_FOUND = 'Không có người dùng phù hợp.';
 const MSG_NO_LEAVES_FOUND = 'Không có đơn phù hợp.';
 const MSG_UPLOAD_DIRECTORY_MISSING = 'Không tìm thấy thư mục lưu tệp.';

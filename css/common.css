@@ -1,4 +1,3 @@
-/* Font dùng chung cho các màn hình. */
 @font-face {
     font-family: 'Noto Sans JP';
     font-style: normal;
@@ -34,7 +33,6 @@
     src: url('../font/Roboto-Bold.ttf') format('truetype');
 }
 
-/* Thanh tiêu đề phía trên. */
 .site-header {
     position: fixed;
     width: 100%;
@@ -73,7 +71,6 @@
     color: #FFFFFF;
 }
 
-/* Sidebar dùng chung: mục đang chọn, rê chuột và nhấn giữ. */
 .sidebar,
 .sidebar * {
     box-sizing: border-box;
@@ -162,7 +159,6 @@
     color: #FFEBEB;
 }
 
-/* Popup xác nhận dùng chung, lấy từ mục 5.2 trong status.md và thu còn 80%. */
 .popup-overlay,
 .popup-overlay * {
     box-sizing: border-box;

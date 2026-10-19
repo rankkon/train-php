@@ -1,5 +1,3 @@
-/* CSS danh sách đơn lấy từ status.md: tìm kiếm, nút, bảng và phân trang.
-   Bảng giãn theo số hàng thay vì cố định chiều cao như bản vẽ. */
 .leave-list-page,
 .leave-list-page * {
     box-sizing: border-box;
@@ -19,7 +17,6 @@
     padding: 102px 0 42px;
 }
 
-/* Thanh tìm kiếm và nút thêm đơn. */
 .leave-list-toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -110,7 +107,6 @@
     background: #005F96;
 }
 
-/* Khung bảng có thanh cuộn ngang khi màn hình hẹp. */
 .leave-table-container {
     width: 100%;
     overflow-x: auto;
@@ -174,7 +170,6 @@
     font-weight: 600;
 }
 
-/* Màu của đơn mới và đơn đã hủy. */
 .leave-status-0 {
     background: #91FF98;
 }
@@ -187,7 +182,6 @@
     padding: 0 12px;
 }
 
-/* Mô tả dài hiện dấu ... để chừa chỗ cho các nút ở cuối hàng. */
 .leave-description {
     display: flex;
     align-items: center;
@@ -208,7 +202,7 @@
     flex: none;
     align-items: center;
     gap: 7px;
-    margin-left: auto;
+    margin: 0 0 0 auto;
 }
 
 .leave-actions button,
@@ -269,7 +263,72 @@
     background: #B81816;
 }
 
-/* Phân trang: trang hiện tại màu tối, nút không dùng được màu nhạt. */
+.leave-cancel-dialog {
+    min-height: 284.8px;
+}
+
+.leave-cancel-fields {
+    padding: 35.2px 29.6px 0;
+}
+
+.leave-cancel-fields label {
+    display: block;
+    margin-bottom: 15.2px;
+    font-size: 19.2px;
+    line-height: 23.2px;
+}
+
+.leave-cancel-required {
+    color: #BD0101;
+    font-size: 12.8px;
+    font-weight: 700;
+}
+
+.leave-cancel-reason {
+    display: block;
+    width: 100%;
+    height: 60.8px;
+    padding: 8px;
+    resize: vertical;
+    background: rgba(255, 255, 255, 0.5);
+    border: 0.8px solid #CCCCCC;
+    border-radius: 3.2px;
+    font: inherit;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.leave-process-error {
+    margin: 0 0 12px;
+    color: #BD0101;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.leave-popup-error {
+    margin: 12px 29.6px 0;
+}
+
+.leave-cancel-reason.leave-field-error {
+    border-color: #BD0101;
+}
+
+.leave-cancel-reason + .leave-process-error {
+    margin: 8px 0 0;
+}
+
+.leave-cancel-dialog .leave-cancel-actions {
+    justify-content: center;
+    padding: 20.8px 29.6px 31.2px;
+}
+
+.leave-cancel-actions .popup-button {
+    flex: none;
+    width: 176px;
+    max-width: 100%;
+}
+
 .leave-pagination {
     display: flex;
     flex-wrap: wrap;

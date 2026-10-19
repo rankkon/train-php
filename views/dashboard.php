@@ -1,5 +1,5 @@
 <?php
-// Đọc các đơn trong phạm vi được phép xem và chuẩn bị từng hàng.
+
 require dirname(__DIR__) . '/logic/dashboard_logic.php';
 ?>
 <!DOCTYPE html>
@@ -22,7 +22,6 @@ require dirname(__DIR__) . '/logic/dashboard_logic.php';
     <?php require __DIR__ . '/sidebar.php'; ?>
 
     <main class="dashboard-list">
-        <!-- Tiêu đề và dữ liệu được in lần lượt từ các mảng do logic chuẩn bị. -->
         <div class="dashboard-table-container">
             <table class="dashboard-table">
                 <thead>

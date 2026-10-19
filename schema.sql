@@ -1,4 +1,3 @@
--- Chỉ chạy một lần để khởi tạo database mới, không chạy lại trên dữ liệu đang dùng.
 SET NAMES utf8mb4;
 SET time_zone = '+07:00';
 
@@ -8,7 +7,6 @@ CREATE DATABASE IF NOT EXISTS train_php
 
 USE train_php;
 
--- Tài khoản: quyền 1 = user, 2 = manager, 3 = admin; trạng thái 0 là đã khóa.
 CREATE TABLE users (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
@@ -31,7 +29,6 @@ CREATE TABLE users (
     )
 );
 
--- Đơn: tên bảng leave phải có dấu backtick vì trùng từ khóa SQL.
 CREATE TABLE `leave` (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     user_id INT UNSIGNED NOT NULL,
@@ -46,6 +43,7 @@ CREATE TABLE `leave` (
     approved_at DATE NULL,
     delete_at DATETIME NULL,
     update_at DATETIME NULL,
+    cancel_reason TEXT NULL DEFAULT NULL,
     attachment_original_name VARCHAR(255) NOT NULL,
     attachment_path VARCHAR(255) NOT NULL,
     PRIMARY KEY (id),
@@ -58,7 +56,6 @@ CREATE TABLE `leave` (
     CONSTRAINT ck_requests_dates CHECK (start_date <= end_date)
 );
 
--- Tạo tài khoản admin ban đầu trong transaction, không đổi mật khẩu tài khoản đã có.
 START TRANSACTION;
 
 INSERT INTO users (username, full_name, password_hash, user_type, department)

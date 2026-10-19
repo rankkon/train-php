@@ -6,7 +6,7 @@ require_once __DIR__ . '/queries.php';
 require_once __DIR__ . '/leave_validation.php';
 require_once __DIR__ . '/leave_form.php';
 
-// Xóa file cũ sau commit; không xóa file đang được đơn khác dùng hoặc file ngoài uploads.
+// Xóa file cũ sau commit nếu không còn đơn dùng.
 function removeOldLeaveAttachment($db, $path) {
     try {
         if (countAttachmentUsage($db, $path) > 0) {
@@ -17,20 +17,19 @@ function removeOldLeaveAttachment($db, $path) {
             error_log(MSG_OLD_ATTACHMENT_DELETE_FAILED);
         }
     } catch (Throwable $error) {
-        // Đơn đã lưu thành công nên lỗi dọn file không được làm rollback hay báo lưu thất bại.
+
         error_log(MSG_OLD_ATTACHMENT_DELETE_FAILED);
     }
 }
 
 // Thêm hoặc sửa đơn cùng file trong transaction.
-function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $today, $maxAttachmentSize, $leaveId = 0) {
+function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $maxAttachmentSize, $leaveId = 0) {
     $fullPath = null;
     $leave = null;
     $ownerId = $userId;
-    $minimumDate = $today;
 
     try {
-        // Khóa đơn đang sửa trước khi đọc lại chủ đơn và kiểm tra quyền.
+
         $db->begin_transaction();
         if ($leaveId > 0) {
             $leave = findLeaveById($db, $leaveId, true);
@@ -39,7 +38,6 @@ function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $today, $max
                 return ['form' => MSG_LEAVE_NOT_FOUND];
             }
             $ownerId = (int) $leave['user_id'];
-            $minimumDate = '';
         }
 
         $users = lockLeaveUsers($db, $userId, $ownerId, (int) $values['approver_id']);
@@ -58,6 +56,11 @@ function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $today, $max
             return ['form' => MSG_LEAVE_EDIT_FORBIDDEN];
         }
 
+        date_default_timezone_set(APP_TIMEZONE);
+        $minimumDate = '';
+        if ($leaveId === 0) {
+            $minimumDate = date(APP_DATE_FORMAT);
+        }
         $approvers = findApprovers($db, $currentUser);
         $errors = validateLeaveFields($values, $approvers, $leaveTypes, $minimumDate);
         if (!$attachment || (int) $attachment['user_id'] !== $userId) {
@@ -73,7 +76,6 @@ function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $today, $max
             return $errors;
         }
 
-        // Dùng lại file cũ nếu tên, đường dẫn và nội dung không thay đổi.
         $reuseAttachment = false;
         if ($leave && isset($attachment['path']) && $attachment['path'] === $leave['attachment_path']) {
             $savedAttachment = readSavedLeaveAttachment($leave, $userId);
@@ -88,7 +90,7 @@ function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $today, $max
             if (!is_dir($projectRoot . '/uploads')) {
                 throw new RuntimeException(MSG_UPLOAD_DIRECTORY_MISSING);
             }
-            // Tên ngẫu nhiên tránh trùng file; tên gốc vẫn được lưu trong database.
+
             $extension = strtolower(pathinfo($attachment['name'], PATHINFO_EXTENSION));
             $attachmentPath = 'uploads/' . bin2hex(random_bytes(ATTACHMENT_RANDOM_BYTES)) . '.' . $extension;
             $fullPath = $projectRoot . '/' . $attachmentPath;
@@ -101,13 +103,12 @@ function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $today, $max
         if ($leaveId > 0) {
             updateLeave($db, $leaveId, $values, $attachment['name'], $attachmentPath);
         } else {
-            date_default_timezone_set(APP_TIMEZONE);
             $createdAt = date(APP_DATETIME_FORMAT);
             insertLeave($db, $userId, $values, $createdAt, $attachment['name'], $attachmentPath);
         }
         $db->commit();
     } catch (Throwable $error) {
-        // Vẫn phải thử xóa file kể cả khi việc rollback cũng gặp lỗi.
+
         try {
             $db->rollback();
         } catch (Throwable $rollbackError) {
@@ -120,7 +121,6 @@ function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $today, $max
         return ['form' => MSG_SAVE_FAILED];
     }
 
-    // Chỉ dọn file cũ sau khi UPDATE đã commit, giữ file cũ nguyên vẹn nếu lưu thất bại.
     if ($leave && $leave['attachment_path'] !== $attachmentPath) {
         removeOldLeaveAttachment($db, $leave['attachment_path']);
     }

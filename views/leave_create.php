@@ -1,5 +1,5 @@
 <?php
-// Xử lý form và chuẩn bị dữ liệu trước khi hiển thị HTML.
+
 require dirname(__DIR__) . '/logic/leave_create_logic.php';
 ?>
 <!DOCTYPE html>
@@ -22,20 +22,13 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
     <main class="leave-list leave-create">
         <h1 class="leave-form-title"><?= escapeHtml($formTitle) ?></h1>
 
-        <!-- Form nhập và form xác nhận dùng chung các ô -->
         <form class="leave-form<?php if ($isConfirmation): ?> leave-form-confirm<?php endif; ?>" method="post" action="<?= escapeHtml($formAction) ?>" enctype="multipart/form-data" novalidate>
-            <!-- Các ô ẩn để xác thực CSRF, giới hạn kích thước file và lưu mã xác nhận. -->
-            <input type="hidden" name="csrf_token" value="<?= escapeHtml($csrfToken) ?>">
             <input type="hidden" name="MAX_FILE_SIZE" value="<?= escapeHtml($maxAttachmentSize) ?>">
-            <?php if ($isConfirmation): ?>
-                <input type="hidden" name="save_token" value="<?= escapeHtml($saveToken) ?>">
-            <?php endif; ?>
 
             <?php if (isset($errors['form'])): ?>
                 <p class="leave-form-error"><?= escapeHtml($errors['form']) ?></p>
             <?php endif; ?>
 
-            <!-- Thông tin đơn và thông báo lỗi của từng ô nhập. -->
             <div class="leave-form-field">
                 <label for="leave-title">Tiêu đề <span class="required-marker">*</span></label>
                 <input type="text" id="leave-title" name="title" maxlength="<?= escapeHtml(LEAVE_TITLE_MAX_LENGTH) ?>" value="<?= escapeHtml($values['title']) ?>" required
@@ -120,7 +113,6 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                 <?php endif; ?>
             </div>
 
-            <!-- Khi xác nhận chỉ hiển thị tên file đã kiểm tra trong session. -->
             <div class="leave-form-field leave-form-attachment">
                 <label<?php if (!$isConfirmation): ?> for="leave-attachment"<?php endif; ?>>Đính kèm <span class="required-marker">*</span></label>
                 <?php if ($isConfirmation): ?>
@@ -143,7 +135,6 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                 <?php endif; ?>
             </div>
 
-            <!-- Đổi nhóm nút theo bước đang xem. -->
             <div class="leave-form-actions">
                 <?php if ($isConfirmation): ?>
                     <button type="submit" name="action" value="confirm_save" class="leave-form-next">Lưu lại</button>
@@ -154,7 +145,6 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                 <?php endif; ?>
             </div>
 
-            <!-- Popup được hiển thị sau khi bấm Lưu lại. -->
             <?php if ($showSavePopup): ?>
                 <div class="popup-overlay">
                     <section class="popup-dialog">

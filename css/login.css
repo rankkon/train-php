@@ -1,4 +1,3 @@
-/* Thanh tiêu đề trên màn hình đăng nhập. */
 .login-page .site-header {
     position: fixed;
     width: 100%;
@@ -35,7 +34,6 @@
     white-space: nowrap;
 }
 
-/* Khung form, nhãn và ô nhập theo mẫu Figma. */
 .login-page {
     position: relative;
     min-height: 100vh;
@@ -182,7 +180,6 @@
     white-space: nowrap;
 }
 
-/* Nút đăng nhập và nút xóa trống. */
 .login-page .login-actions button {
     box-sizing: border-box;
     position: absolute;
@@ -254,7 +251,6 @@
     color: rgba(255, 255, 255, 0.87);
 }
 
-/* Thông báo và viền đỏ khi đăng nhập lỗi. */
 .login-page .login-error {
     position: absolute;
     width: 351px;

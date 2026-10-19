@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/const.php';
 
-// Database chỉ lưu mã số; các mảng này dùng để đổi mã thành tên trên giao diện.
 $userStatuses = [
     USER_STATUS_LOCKED => 'Đã khóa',
     USER_STATUS_ACTIVE => 'Đang hoạt động',
