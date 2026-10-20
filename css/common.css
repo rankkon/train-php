@@ -121,7 +121,8 @@
 }
 
 .sidebar a.menu-item,
-.sidebar button.menu-item {
+.sidebar button.menu-item,
+.sidebar label.menu-item {
     cursor: pointer;
 }
 
@@ -172,6 +173,14 @@
     overflow-y: auto;
     padding: 24px;
     background: rgba(0, 0, 0, 0.4);
+}
+
+.logout-confirm-popup {
+    display: none;
+}
+
+.logout-confirm-toggle:checked ~ .logout-confirm-popup {
+    display: flex;
 }
 
 .popup-dialog {

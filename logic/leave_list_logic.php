@@ -67,7 +67,7 @@ if ($requestMethod === 'POST') {
 
 $searchWhere = leaveSearchWhere($db, $search, $leaveTypes);
 $totalRows = countLeaves($db, $currentUser, $search, $searchWhere);
-$perPage = LIST_PER_PAGE;
+$perPage = LEAVE_LIST_PER_PAGE;
 $totalPages = (int) ceil($totalRows / $perPage);
 if ($totalPages < 1) {
     $totalPages = 1;

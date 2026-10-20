@@ -1,6 +1,8 @@
 .leave-create-page {
     min-height: 100vh;
+    height: 100vh;
     margin: 0;
+    overflow: hidden;
     background: #FFFFFF;
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 14px;
@@ -14,35 +16,59 @@
 }
 
 .leave-create-page .leave-create {
-    margin-left: 296px;
-    margin-right: 32px;
-    padding: 96px 0 43px;
+    position: fixed;
+    top: 75px;
+    right: 0;
+    bottom: 0;
+    left: 269px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    min-height: 0;
+    padding: 24px;
 }
 
 .leave-form-title {
+    flex: none;
     margin: 0;
     font: inherit;
-    line-height: 17px;
+    line-height: 20px;
 }
 
 .leave-form {
     display: flex;
     flex-direction: column;
-    width: 613px;
-    max-width: calc(100% - 93px);
-    min-height: 790px;
-    margin: 58px 0 0 93px;
+    flex: 1;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    margin: 0;
+}
+
+.leave-form-fields {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    padding-right: 20px;
 }
 
 .leave-form-field {
     display: grid;
-    grid-template-columns: 133px minmax(0, 480px);
+    grid-template-columns: 140px minmax(0, 450px);
     align-items: start;
-    margin-bottom: 22px;
+    column-gap: 12px;
+    margin-bottom: 12px;
+}
+
+.leave-form-field:last-child {
+    margin-bottom: 0;
 }
 
 .leave-form-field > label {
-    padding-top: 10px;
+    padding-top: 6px;
     line-height: 19px;
 }
 
@@ -58,9 +84,9 @@
 .leave-form-field select {
     width: 100%;
     min-width: 0;
-    height: 40px;
+    height: 32px;
     margin: 0;
-    padding: 8px 10px;
+    padding: 5px 10px;
     border: 1px solid #CCCCCC;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.5);
@@ -69,32 +95,28 @@
     color: #000000;
 }
 
-.leave-form-content {
-    margin-bottom: 28px;
-}
-
 .leave-form-content textarea {
-    height: 94px;
+    height: 72px;
+    width: 100%;
+    min-height: 52px;
     resize: vertical;
-}
-
-.leave-form-select {
-    margin-bottom: 29px;
 }
 
 .leave-select-control {
     position: relative;
-    width: 240px;
+    width: 220px;
     max-width: 100%;
-    height: 40px;
+    height: 32px;
+}
+
+.leave-form-type .leave-select-control {
+    width: 300px;
 }
 
 .leave-select-control select {
     appearance: none;
-    padding: 8px 40px 8px 16px;
+    padding: 5px 32px 5px 10px;
     background: #FFFFFF;
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
     color: #1E1E1E;
 }
 
@@ -102,7 +124,7 @@
     content: '';
     position: absolute;
     top: 50%;
-    right: 12px;
+    right: 8px;
     width: 16px;
     height: 16px;
     transform: translateY(-50%);
@@ -111,21 +133,15 @@
     pointer-events: none;
 }
 
-.leave-form-date input,
-.leave-date-control,
-.leave-form-attachment input,
-.leave-file-control {
-    width: 189px;
+.leave-date-control {
+    position: relative;
+    width: 170px;
     max-width: 100%;
 }
 
-.leave-date-control {
-    position: relative;
-}
-
 .leave-form-date input::-webkit-calendar-picker-indicator {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     margin: 0;
     padding: 0;
     cursor: pointer;
@@ -133,7 +149,9 @@
 
 .leave-file-control {
     position: relative;
-    height: 40px;
+    width: 220px;
+    max-width: 100%;
+    height: 32px;
 }
 
 .leave-file-control input {
@@ -198,7 +216,7 @@
 
 .leave-form-field > p {
     grid-column: 2;
-    margin: 12px 0 0;
+    margin: 6px 0 0;
     overflow-wrap: anywhere;
     line-height: 20px;
 }
@@ -209,7 +227,7 @@
 }
 
 .leave-form-error {
-    margin: 0 0 22px;
+    margin: 0 0 12px;
     color: #F90A0A;
     font-size: 14px;
     line-height: 20px;
@@ -221,10 +239,11 @@
 
 .leave-form-actions {
     display: flex;
+    flex: none;
     flex-wrap: wrap;
-    gap: 20px 33px;
-    margin-top: auto;
-    padding: 72px 0 0 7px;
+    gap: 16px;
+    margin: 0;
+    padding-left: 132px;
 }
 
 .leave-form-actions button {
@@ -234,6 +253,7 @@
     gap: 4px;
     width: 220px;
     max-width: 100%;
+    min-width: 0;
     height: 50px;
     padding: 4px 24px;
     border: 1px solid #CCCCCC;
@@ -296,8 +316,8 @@
 
 .leave-calendar-icon {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 4px;
+    right: 6px;
     width: 24px;
     height: 24px;
     background: linear-gradient(#000000, #000000) 7px 3px / 2px 4px no-repeat,
@@ -330,30 +350,28 @@
 }
 
 .leave-confirm-attachment {
-    min-height: 40px;
-    padding: 10px 0 13px;
+    min-height: 32px;
+    padding: 6px 0;
     color: #00AAFF;
     font-size: 14px;
-    line-height: 17px;
+    line-height: 20px;
     overflow-wrap: anywhere;
 }
 
-@media (max-width: 1050px) {
-    .leave-form {
-        max-width: 100%;
-        margin-left: 0;
+@media (max-width: 1000px) {
+    .leave-create-page .leave-create {
+        padding: 16px;
+    }
+
+    .leave-form-actions {
+        padding-left: 0;
     }
 }
 
 @media (max-width: 760px) {
-    .leave-create-page .leave-create {
-        margin-right: 20px;
-        margin-left: 289px;
-    }
-
     .leave-form-field {
         grid-template-columns: minmax(0, 1fr);
-        row-gap: 8px;
+        row-gap: 6px;
     }
 
     .leave-form-field > label {
@@ -363,9 +381,5 @@
     .leave-form-field > p {
         grid-column: 1;
         margin-top: 4px;
-    }
-
-    .leave-form-actions {
-        padding-left: 0;
     }
 }

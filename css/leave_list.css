@@ -11,40 +11,53 @@
     color: #1E1E1E;
 }
 
-.leave-list-page .leave-list {
-    margin-left: 318px;
-    margin-right: 45px;
-    padding: 102px 0 42px;
+.leave-list-screen {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.leave-list-screen .leave-list {
+    position: fixed;
+    top: 75px;
+    right: 0;
+    bottom: 0;
+    left: 269px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+    min-height: 0;
+    padding: 24px;
 }
 
 .leave-list-toolbar {
     display: flex;
-    flex-wrap: wrap;
+    flex: none;
     align-items: center;
     justify-content: space-between;
     gap: 14px 24px;
-    min-height: 40px;
-    margin-bottom: 14px;
+    height: 40px;
 }
 
 .leave-search {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 216px minmax(240px, 360px) 100px;
+    flex: 1;
+    min-width: 0;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
     margin: 0;
 }
 
 .leave-search label {
-    width: 216px;
     font-size: 16px;
     font-weight: 400;
     line-height: 140%;
 }
 
 .leave-search input {
-    width: 272px;
-    min-width: 240px;
+    width: 100%;
+    min-width: 0;
     height: 40px;
     padding: 12px 16px;
     background: #FFFFFF;
@@ -78,8 +91,7 @@
 }
 
 .leave-search-button {
-    width: 93px;
-    margin-left: 20px;
+    width: 100px;
     background: #FF7700;
     cursor: pointer;
 }
@@ -93,7 +105,7 @@
 }
 
 .leave-add {
-    width: 133px;
+    width: 140px;
     background: #007EC6;
     cursor: pointer;
     text-decoration: none;
@@ -108,8 +120,11 @@
 }
 
 .leave-table-container {
+    flex: 1;
     width: 100%;
-    overflow-x: auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
     background: #FFFFFF;
     border: 1px solid #B9B9B9;
     border-radius: 4px;
@@ -140,7 +155,10 @@
 }
 
 .leave-table th {
-    background: rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #F0F0F0;
     font-weight: 600;
 }
 
@@ -197,6 +215,23 @@
     text-overflow: ellipsis;
 }
 
+.leave-management-table th:last-child {
+    width: 140px;
+}
+
+.leave-management-table .leave-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.leave-management-table .leave-actions {
+    justify-content: flex-end;
+    gap: 15px;
+}
+
 .leave-actions {
     display: flex;
     flex: none;
@@ -224,6 +259,15 @@
     cursor: pointer;
     white-space: nowrap;
     text-decoration: none;
+}
+
+.leave-management-table .leave-actions button,
+.leave-management-table .leave-actions a {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .leave-approve {
@@ -306,6 +350,11 @@
     overflow-wrap: anywhere;
 }
 
+.leave-list > .leave-process-error {
+    flex: none;
+    margin: 0;
+}
+
 .leave-popup-error {
     margin: 12px 29.6px 0;
 }
@@ -331,11 +380,11 @@
 
 .leave-pagination {
     display: flex;
+    flex: none;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
     min-height: 38px;
-    margin-top: 27px;
     font-size: 16px;
     line-height: 100%;
 }
@@ -351,6 +400,11 @@
     border-radius: 8px;
     color: #1E1E1E;
     text-decoration: none;
+}
+
+.leave-pagination > a:not(.leave-page-previous):not(.leave-page-next):hover {
+    background: #F0F0F0;
+    color: #333333;
 }
 
 .leave-pagination .leave-page-previous {
@@ -374,4 +428,47 @@
 .leave-pagination .leave-page-gap {
     padding: 8px 16px;
     font-weight: 700;
+}
+
+@media (max-width: 1200px) {
+    .leave-list-toolbar {
+        height: calc(40px + 12px + 1.4em);
+        align-items: flex-end;
+    }
+
+    .leave-search {
+        grid-template-columns: minmax(0, 360px) 100px;
+    }
+
+    .leave-search label {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 1000px) {
+    .leave-list-screen .leave-list {
+        gap: 12px;
+        padding: 16px;
+    }
+}
+
+@media (max-width: 760px) {
+    .leave-list-toolbar {
+        height: calc(80px + 24px + 1.4em);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .leave-search {
+        flex: none;
+    }
+
+    .leave-add {
+        align-self: flex-end;
+    }
+
+    .leave-pagination {
+        gap: 4px;
+    }
 }

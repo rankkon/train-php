@@ -11,7 +11,7 @@ require dirname(__DIR__) . '/logic/leave_list_logic.php';
     <link rel="stylesheet" href="../css/common.css?v=<?= escapeHtml(filemtime(dirname(__DIR__) . '/css/common.css')) ?>">
     <link rel="stylesheet" href="../css/leave_list.css?v=<?= escapeHtml(filemtime(dirname(__DIR__) . '/css/leave_list.css')) ?>">
 </head>
-<body class="leave-list-page">
+<body class="leave-list-page leave-list-screen">
     <header class="site-header">
         <span class="site-brand">Sanshin</span>
         <span class="site-description">Hệ thống quản lý đơn</span>
@@ -23,7 +23,7 @@ require dirname(__DIR__) . '/logic/leave_list_logic.php';
         <div class="leave-list-toolbar">
             <form method="get" action="leave_list.php" class="leave-search">
                 <label for="leave-search">Tên user/Loại đơn/Nội dung</label>
-                <input type="text" id="leave-search" name="q" value="<?= escapeHtml($search) ?>" placeholder="Value">
+                <input type="text" id="leave-search" name="q" value="<?= escapeHtml($search) ?>">
                 <button type="submit" class="leave-search-button">Tìm kiếm</button>
             </form>
             <a href="leave_create.php" class="leave-add">Thêm mới đơn</a>
@@ -34,7 +34,7 @@ require dirname(__DIR__) . '/logic/leave_list_logic.php';
         <?php endif; ?>
 
         <div class="leave-table-container">
-            <table class="leave-table">
+            <table class="leave-table leave-management-table">
                 <thead>
                     <tr>
                         <th scope="col">STT</th>
@@ -44,11 +44,12 @@ require dirname(__DIR__) . '/logic/leave_list_logic.php';
                         <th scope="col">Trạng thái</th>
                         <th scope="col">Ngày duty</th>
                         <th scope="col">Mô tả</th>
+                        <th scope="col">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!$leaves): ?>
-                        <tr><td colspan="7"><?= escapeHtml(MSG_NO_LEAVES_FOUND) ?></td></tr>
+                        <tr><td colspan="8"><?= escapeHtml(MSG_NO_LEAVES_FOUND) ?></td></tr>
                     <?php endif; ?>
                     <?php foreach ($leaves as $leave): ?>
                         <tr class="leave-row leave-status-<?= escapeHtml((int) $leave['status']) ?>">
@@ -58,24 +59,24 @@ require dirname(__DIR__) . '/logic/leave_list_logic.php';
                             <td><?= escapeHtml($leave['created_date']) ?></td>
                             <td><?= escapeHtml($leave['status_name']) ?></td>
                             <td><?= escapeHtml($leave['end_date']) ?></td>
+                            <td title="<?= escapeHtml($leave['title']) ?>">
+                                <span class="leave-title"><?= escapeHtml($leave['title']) ?></span>
+                            </td>
                             <td>
-                                <div class="leave-description">
-                                    <span class="leave-title" title="<?= escapeHtml($leave['title']) ?>"><?= escapeHtml($leave['title']) ?></span>
-                                    <?php if ($leave['show_actions'] || $leave['show_edit']): ?>
-                                        <form method="post" action="<?= escapeHtml(pageUrl($page, $search)) ?>" class="leave-actions">
-                                            <?php if ($leave['show_actions']): ?>
-                                                <input type="hidden" name="leave_id" value="<?= escapeHtml($leave['id']) ?>">
-                                                <button type="submit" name="action" value="open_approve" class="leave-approve">Duyệt</button>
-                                            <?php endif; ?>
-                                            <?php if ($leave['show_edit']): ?>
-                                                <a href="leave_create.php?id=<?= escapeHtml($leave['id']) ?>" class="leave-edit">Sửa</a>
-                                            <?php endif; ?>
-                                            <?php if ($leave['show_actions']): ?>
-                                                <button type="submit" name="action" value="open_cancel" class="leave-cancel">Hủy</button>
-                                            <?php endif; ?>
-                                        </form>
-                                    <?php endif; ?>
-                                </div>
+                                <?php if ($leave['show_actions'] || $leave['show_edit']): ?>
+                                    <form method="post" action="<?= escapeHtml(pageUrl($page, $search)) ?>" class="leave-actions">
+                                        <?php if ($leave['show_actions']): ?>
+                                            <input type="hidden" name="leave_id" value="<?= escapeHtml($leave['id']) ?>">
+                                            <button type="submit" name="action" value="open_approve" class="leave-approve" title="Duyệt">✓</button>
+                                        <?php endif; ?>
+                                        <?php if ($leave['show_edit']): ?>
+                                            <a href="leave_create.php?id=<?= escapeHtml($leave['id']) ?>" class="leave-edit" title="Sửa">✎</a>
+                                        <?php endif; ?>
+                                        <?php if ($leave['show_actions']): ?>
+                                            <button type="submit" name="action" value="open_cancel" class="leave-cancel" title="Hủy">×</button>
+                                        <?php endif; ?>
+                                    </form>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

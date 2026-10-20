@@ -9,9 +9,10 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách người dùng | Sanshin</title>
     <link rel="stylesheet" href="../css/common.css?v=<?= escapeHtml(filemtime(dirname(__DIR__) . '/css/common.css')) ?>">
+    <link rel="stylesheet" href="../css/leave_list.css?v=<?= escapeHtml(filemtime(dirname(__DIR__) . '/css/leave_list.css')) ?>">
     <link rel="stylesheet" href="../css/user_list.css?v=<?= escapeHtml(filemtime(dirname(__DIR__) . '/css/user_list.css')) ?>">
 </head>
-<body class="user-list-page">
+<body class="leave-list-page leave-list-screen">
     <header class="site-header">
         <span class="site-brand">Sanshin</span>
         <span class="site-description">Hệ thống quản lý đơn</span>
@@ -19,21 +20,21 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
 
     <?php require __DIR__ . '/sidebar.php'; ?>
 
-    <main class="user-list">
-        <div class="user-list-toolbar">
-            <form method="get" action="user_list.php" class="user-search">
+    <main class="leave-list">
+        <div class="leave-list-toolbar">
+            <form method="get" action="user_list.php" class="leave-search user-search">
                 <label for="user-search">Mã/Tên user</label>
-                <input type="text" id="user-search" name="q" value="<?= escapeHtml($search) ?>" placeholder="Value">
-                <button type="submit" class="user-search-button">Tìm kiếm</button>
+                <input type="text" id="user-search" name="q" value="<?= escapeHtml($search) ?>">
+                <button type="submit" class="leave-search-button">Tìm kiếm</button>
             </form>
             <div class="user-list-actions">
-                <button type="button" class="user-add">Thêm mới</button>
-                <button type="button" class="user-delete">Xóa nhiều</button>
+                <button type="button" class="leave-add">Thêm mới</button>
+                <button type="button" class="leave-add leave-cancel">Xóa nhiều</button>
             </div>
         </div>
 
-        <div class="user-table-container">
-            <table class="user-table">
+        <div class="leave-table-container">
+            <table class="leave-table user-table">
                 <thead>
                     <tr>
                         <th scope="col"><input type="checkbox" id="select-all-users"></th>
@@ -56,9 +57,9 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
                             <td><?= escapeHtml($user['created_date']) ?></td>
                             <td><?= escapeHtml($user['status_name']) ?></td>
                             <td>
-                                <div class="user-row-actions">
-                                    <button type="button" class="user-edit">Sửa</button>
-                                    <button type="button" class="user-delete">Xóa</button>
+                                <div class="leave-actions user-row-actions">
+                                    <button type="button" class="leave-edit">Sửa</button>
+                                    <button type="button" class="leave-cancel">Xóa</button>
                                 </div>
                             </td>
                         </tr>
@@ -67,28 +68,28 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
             </table>
         </div>
 
-        <nav class="user-pagination">
+        <nav class="leave-pagination">
             <?php if ($previousPageUrl !== null): ?>
-                <a href="<?= escapeHtml($previousPageUrl) ?>" class="user-page-previous">← Previous</a>
+                <a href="<?= escapeHtml($previousPageUrl) ?>" class="leave-page-previous">← Previous</a>
             <?php else: ?>
-                <span class="user-page-previous user-page-disabled">← Previous</span>
+                <span class="leave-page-previous leave-page-disabled">← Previous</span>
             <?php endif; ?>
 
             <?php foreach ($pagination as $link): ?>
                 <?php if ($link['show_gap']): ?>
-                    <span class="user-page-gap">…</span>
+                    <span class="leave-page-gap">…</span>
                 <?php endif; ?>
                 <?php if ($link['current']): ?>
-                    <span class="user-page-current"><?= escapeHtml($link['number']) ?></span>
+                    <span class="leave-page-current"><?= escapeHtml($link['number']) ?></span>
                 <?php else: ?>
                     <a href="<?= escapeHtml($link['url']) ?>"><?= escapeHtml($link['number']) ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
 
             <?php if ($nextPageUrl !== null): ?>
-                <a href="<?= escapeHtml($nextPageUrl) ?>" class="user-page-next">Next →</a>
+                <a href="<?= escapeHtml($nextPageUrl) ?>" class="leave-page-next">Next →</a>
             <?php else: ?>
-                <span class="user-page-next user-page-disabled">Next →</span>
+                <span class="leave-page-next leave-page-disabled">Next →</span>
             <?php endif; ?>
         </nav>
     </main>

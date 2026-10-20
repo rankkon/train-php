@@ -25,114 +25,114 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
         <form class="leave-form<?php if ($isConfirmation): ?> leave-form-confirm<?php endif; ?>" method="post" action="<?= escapeHtml($formAction) ?>" enctype="multipart/form-data" novalidate>
             <input type="hidden" name="MAX_FILE_SIZE" value="<?= escapeHtml($maxAttachmentSize) ?>">
 
-            <?php if (isset($errors['form'])): ?>
-                <p class="leave-form-error"><?= escapeHtml($errors['form']) ?></p>
-            <?php endif; ?>
-
-            <div class="leave-form-field">
-                <label for="leave-title">Tiêu đề <span class="required-marker">*</span></label>
-                <input type="text" id="leave-title" name="title" maxlength="<?= escapeHtml(LEAVE_TITLE_MAX_LENGTH) ?>" value="<?= escapeHtml($values['title']) ?>" required
-                    <?php if ($isConfirmation): ?>disabled<?php endif; ?>
-                    <?php if (isset($errors['title'])): ?>class="leave-input-error"<?php endif; ?>>
-                <?php if (isset($errors['title'])): ?>
-                    <p id="leave-title-error" class="leave-form-error"><?= escapeHtml($errors['title']) ?></p>
+            <div class="leave-form-fields">
+                <?php if (isset($errors['form'])): ?>
+                    <p class="leave-form-error"><?= escapeHtml($errors['form']) ?></p>
                 <?php endif; ?>
-            </div>
 
-            <div class="leave-form-field leave-form-content">
-                <label for="leave-content">Nội dung</label>
-                <textarea id="leave-content" name="content"
-                    <?php if ($isConfirmation): ?>disabled<?php endif; ?>
-                    <?php if (isset($errors['content'])): ?>class="leave-input-error"<?php endif; ?>><?= escapeHtml($values['content']) ?></textarea>
-                <?php if (isset($errors['content'])): ?>
-                    <p id="leave-content-error" class="leave-form-error"><?= escapeHtml($errors['content']) ?></p>
-                <?php endif; ?>
-            </div>
-
-            <div class="leave-form-field leave-form-select">
-                <label for="leave-approver">Người duyệt <span class="required-marker">*</span></label>
-                <div class="leave-select-control">
-                    <select id="leave-approver" name="approver_id" required
+                <div class="leave-form-field">
+                    <label for="leave-title">Tiêu đề <span class="required-marker">*</span></label>
+                    <input type="text" id="leave-title" name="title" maxlength="<?= escapeHtml(LEAVE_TITLE_MAX_LENGTH) ?>" value="<?= escapeHtml($values['title']) ?>" required
                         <?php if ($isConfirmation): ?>disabled<?php endif; ?>
-                        <?php if (isset($errors['approver_id'])): ?>class="leave-input-error"<?php endif; ?>>
-                        <option value="">Value</option>
-                        <?php foreach ($approvers as $approver): ?>
-                            <option value="<?= escapeHtml((int) $approver['id']) ?>" <?php if ($values['approver_id'] === (string) $approver['id']): ?>selected<?php endif; ?>><?= escapeHtml($approver['full_name']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <?php if (isset($errors['approver_id'])): ?>
-                    <p id="leave-approver-error" class="leave-form-error"><?= escapeHtml($errors['approver_id']) ?></p>
-                <?php endif; ?>
-            </div>
-
-            <div class="leave-form-field leave-form-select">
-                <label for="leave-type">Loại đơn <span class="required-marker">*</span></label>
-                <div class="leave-select-control">
-                    <select id="leave-type" name="leave_type" required
-                        <?php if ($isConfirmation): ?>disabled<?php endif; ?>
-                        <?php if (isset($errors['leave_type'])): ?>class="leave-input-error"<?php endif; ?>>
-                        <option value="">Value</option>
-                        <?php foreach ($leaveTypes as $typeCode => $typeName): ?>
-                            <option value="<?= escapeHtml($typeCode) ?>" <?php if ($values['leave_type'] === (string) $typeCode): ?>selected<?php endif; ?>><?= escapeHtml($typeName) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <?php if (isset($errors['leave_type'])): ?>
-                    <p id="leave-type-error" class="leave-form-error"><?= escapeHtml($errors['leave_type']) ?></p>
-                <?php endif; ?>
-            </div>
-
-            <div class="leave-form-field leave-form-date">
-                <label for="leave-start-date">Ngày bắt đầu <span class="required-marker">*</span></label>
-                <div class="leave-date-control">
-                    <input type="date" id="leave-start-date" name="start_date" value="<?= escapeHtml($values['start_date']) ?>" <?php if ($minimumDate !== ''): ?>min="<?= escapeHtml($minimumDate) ?>"<?php endif; ?> required
-                        <?php if ($isConfirmation): ?>disabled<?php endif; ?>
-                        <?php if (isset($errors['start_date'])): ?>class="leave-input-error"<?php endif; ?>>
-                    <?php if ($isConfirmation): ?>
-                        <span class="leave-calendar-icon"></span>
+                        <?php if (isset($errors['title'])): ?>class="leave-input-error"<?php endif; ?>>
+                    <?php if (isset($errors['title'])): ?>
+                        <p id="leave-title-error" class="leave-form-error"><?= escapeHtml($errors['title']) ?></p>
                     <?php endif; ?>
                 </div>
-                <?php if (isset($errors['start_date'])): ?>
-                    <p id="leave-start-date-error" class="leave-form-error"><?= escapeHtml($errors['start_date']) ?></p>
-                <?php endif; ?>
-            </div>
 
-            <div class="leave-form-field leave-form-date">
-                <label for="leave-end-date">Ngày kết thúc <span class="required-marker">*</span></label>
-                <div class="leave-date-control">
-                    <input type="date" id="leave-end-date" name="end_date" value="<?= escapeHtml($values['end_date']) ?>" <?php if ($minimumDate !== ''): ?>min="<?= escapeHtml($minimumDate) ?>"<?php endif; ?> required
+                <div class="leave-form-field leave-form-content">
+                    <label for="leave-content">Nội dung</label>
+                    <textarea id="leave-content" name="content"
                         <?php if ($isConfirmation): ?>disabled<?php endif; ?>
-                        <?php if (isset($errors['end_date'])): ?>class="leave-input-error"<?php endif; ?>>
-                    <?php if ($isConfirmation): ?>
-                        <span class="leave-calendar-icon"></span>
+                        <?php if (isset($errors['content'])): ?>class="leave-input-error"<?php endif; ?>><?= escapeHtml($values['content']) ?></textarea>
+                    <?php if (isset($errors['content'])): ?>
+                        <p id="leave-content-error" class="leave-form-error"><?= escapeHtml($errors['content']) ?></p>
                     <?php endif; ?>
                 </div>
-                <?php if (isset($errors['end_date'])): ?>
-                    <p id="leave-end-date-error" class="leave-form-error"><?= escapeHtml($errors['end_date']) ?></p>
-                <?php endif; ?>
-            </div>
 
-            <div class="leave-form-field leave-form-attachment">
-                <label<?php if (!$isConfirmation): ?> for="leave-attachment"<?php endif; ?>>Đính kèm <span class="required-marker">*</span></label>
-                <?php if ($isConfirmation): ?>
-                    <span id="leave-attachment" class="leave-confirm-attachment" title="<?= escapeHtml($attachment['name']) ?>"><?= escapeHtml($attachment['name']) ?></span>
-                <?php else: ?>
-                    <div class="leave-file-control">
-                        <input type="file" id="leave-attachment" name="attachment" accept="<?= escapeHtml($attachmentAccept) ?>" required
-                            title="<?= escapeHtml(sprintf(MSG_ATTACHMENT_HINT, ATTACHMENT_MAX_MB)) ?>"
-                            <?php if (isset($errors['attachment'])): ?>class="leave-input-error"<?php endif; ?>>
-                        <?php if ($attachment): ?>
-                            <span id="leave-file-name" class="leave-file-name" title="<?= escapeHtml($attachment['name']) ?>"><?= escapeHtml($attachment['name']) ?></span>
-                        <?php else: ?>
-                            <span id="leave-file-name" class="leave-file-name" title=""></span>
-                        <?php endif; ?>
-                        <span class="leave-upload-icon"></span>
+                <div class="leave-form-field">
+                    <label for="leave-approver">Người duyệt <span class="required-marker">*</span></label>
+                    <div class="leave-select-control">
+                        <select id="leave-approver" name="approver_id" required
+                            <?php if ($isConfirmation): ?>disabled<?php endif; ?>
+                            <?php if (isset($errors['approver_id'])): ?>class="leave-input-error"<?php endif; ?>>
+                            <?php foreach ($approvers as $approver): ?>
+                                <option value="<?= escapeHtml((int) $approver['id']) ?>" <?php if ($values['approver_id'] === (string) $approver['id']): ?>selected<?php endif; ?>><?= escapeHtml($approver['full_name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                    <?php if (isset($errors['attachment'])): ?>
-                        <p id="leave-attachment-error" class="leave-form-error"><?= escapeHtml($errors['attachment']) ?></p>
+                    <?php if (isset($errors['approver_id'])): ?>
+                        <p id="leave-approver-error" class="leave-form-error"><?= escapeHtml($errors['approver_id']) ?></p>
                     <?php endif; ?>
-                <?php endif; ?>
+                </div>
+
+                <div class="leave-form-field leave-form-type">
+                    <label for="leave-type">Loại đơn <span class="required-marker">*</span></label>
+                    <div class="leave-select-control">
+                        <select id="leave-type" name="leave_type" required
+                            <?php if ($isConfirmation): ?>disabled<?php endif; ?>
+                            <?php if (isset($errors['leave_type'])): ?>class="leave-input-error"<?php endif; ?>>
+                            <?php foreach ($leaveTypes as $typeCode => $typeName): ?>
+                                <option value="<?= escapeHtml($typeCode) ?>" <?php if ($values['leave_type'] === (string) $typeCode): ?>selected<?php endif; ?>><?= escapeHtml($typeName) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <?php if (isset($errors['leave_type'])): ?>
+                        <p id="leave-type-error" class="leave-form-error"><?= escapeHtml($errors['leave_type']) ?></p>
+                    <?php endif; ?>
+                </div>
+
+                <div class="leave-form-field leave-form-date">
+                    <label for="leave-start-date">Ngày bắt đầu <span class="required-marker">*</span></label>
+                    <div class="leave-date-control">
+                        <input type="date" id="leave-start-date" name="start_date" value="<?= escapeHtml($values['start_date']) ?>" <?php if ($minimumDate !== ''): ?>min="<?= escapeHtml($minimumDate) ?>"<?php endif; ?> required
+                            <?php if ($isConfirmation): ?>disabled<?php endif; ?>
+                            <?php if (isset($errors['start_date'])): ?>class="leave-input-error"<?php endif; ?>>
+                        <?php if ($isConfirmation): ?>
+                            <span class="leave-calendar-icon"></span>
+                        <?php endif; ?>
+                    </div>
+                    <?php if (isset($errors['start_date'])): ?>
+                        <p id="leave-start-date-error" class="leave-form-error"><?= escapeHtml($errors['start_date']) ?></p>
+                    <?php endif; ?>
+                </div>
+
+                <div class="leave-form-field leave-form-date">
+                    <label for="leave-end-date">Ngày kết thúc <span class="required-marker">*</span></label>
+                    <div class="leave-date-control">
+                        <input type="date" id="leave-end-date" name="end_date" value="<?= escapeHtml($values['end_date']) ?>" <?php if ($minimumDate !== ''): ?>min="<?= escapeHtml($minimumDate) ?>"<?php endif; ?> required
+                            <?php if ($isConfirmation): ?>disabled<?php endif; ?>
+                            <?php if (isset($errors['end_date'])): ?>class="leave-input-error"<?php endif; ?>>
+                        <?php if ($isConfirmation): ?>
+                            <span class="leave-calendar-icon"></span>
+                        <?php endif; ?>
+                    </div>
+                    <?php if (isset($errors['end_date'])): ?>
+                        <p id="leave-end-date-error" class="leave-form-error"><?= escapeHtml($errors['end_date']) ?></p>
+                    <?php endif; ?>
+                </div>
+
+                <div class="leave-form-field leave-form-attachment">
+                    <label<?php if (!$isConfirmation): ?> for="leave-attachment"<?php endif; ?>>Đính kèm <span class="required-marker">*</span></label>
+                    <?php if ($isConfirmation): ?>
+                        <span id="leave-attachment" class="leave-confirm-attachment" title="<?= escapeHtml($attachment['name']) ?>"><?= escapeHtml($attachment['name']) ?></span>
+                    <?php else: ?>
+                        <div class="leave-file-control">
+                            <input type="file" id="leave-attachment" name="attachment" accept="<?= escapeHtml($attachmentAccept) ?>" required
+                                title="<?= escapeHtml(sprintf(MSG_ATTACHMENT_HINT, ATTACHMENT_MAX_MB)) ?>"
+                                <?php if (isset($errors['attachment'])): ?>class="leave-input-error"<?php endif; ?>>
+                            <?php if ($attachment): ?>
+                                <span id="leave-file-name" class="leave-file-name" title="<?= escapeHtml($attachment['name']) ?>"><?= escapeHtml($attachment['name']) ?></span>
+                            <?php else: ?>
+                                <span id="leave-file-name" class="leave-file-name" title=""></span>
+                            <?php endif; ?>
+                            <span class="leave-upload-icon"></span>
+                        </div>
+                        <?php if (isset($errors['attachment'])): ?>
+                            <p id="leave-attachment-error" class="leave-form-error"><?= escapeHtml($errors['attachment']) ?></p>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <div class="leave-form-actions">

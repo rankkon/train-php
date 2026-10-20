@@ -1,6 +1,14 @@
 <?php
 require_once __DIR__ . '/const.php';
 
+$departments = [
+    DEPARTMENT_MANAGEMENT => 'Ban quản lý',
+    DEPARTMENT_HUMAN_RESOURCES => 'Nhân sự',
+    DEPARTMENT_ACCOUNTING => 'Kế toán',
+    DEPARTMENT_TECHNICAL => 'Kỹ thuật',
+    DEPARTMENT_PRODUCTION => 'Sản xuất',
+];
+
 $userStatuses = [
     USER_STATUS_LOCKED => 'Đã khóa',
     USER_STATUS_ACTIVE => 'Đang hoạt động',

@@ -68,12 +68,22 @@ if ($leaveId > 0) {
 }
 $maxAttachmentSize = ATTACHMENT_MAX_BYTES;
 $attachmentAccept = attachmentAccept();
-$values = emptyLeaveValues();
+$defaultValues = emptyLeaveValues();
+if ($leaveId === 0) {
+    $defaultValues['start_date'] = $minimumDate;
+    $defaultValues['end_date'] = $minimumDate;
+}
+if ($approvers) {
+    $defaultValues['approver_id'] = (string) $approvers[0]['id'];
+}
+$leaveTypeCodes = array_keys($leaveTypes);
+$defaultValues['leave_type'] = (string) $leaveTypeCodes[0];
+$values = $defaultValues;
 $errors = [];
 $isConfirmation = false;
 $showSavePopup = false;
 
-if ($leaveId > 0 && $requestMethod === 'GET') {
+if ($requestMethod === 'GET') {
     clearLeaveDraft();
 }
 
@@ -135,7 +145,7 @@ if (!$_POST && !$_FILES && $contentLength > 0) {
 
 if ($action === 'clear') {
     clearLeaveDraft();
-    $values = emptyLeaveValues();
+    $values = $defaultValues;
     $attachment = null;
 
     $_SESSION['leave_create_draft'] = [

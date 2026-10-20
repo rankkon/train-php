@@ -18,8 +18,10 @@ CREATE TABLE users (
     department TINYINT UNSIGNED NOT NULL,
     status TINYINT UNSIGNED NOT NULL DEFAULT 1,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_at DATETIME NULL DEFAULT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY uq_users_username (username),
+    UNIQUE KEY email (email),
     CONSTRAINT ck_users_user_type CHECK (user_type IN (1, 2, 3)),
     CONSTRAINT ck_users_department CHECK (department IN (1, 2, 3, 4, 5)),
     CONSTRAINT ck_users_status CHECK (status IN (0, 1)),
@@ -47,10 +49,8 @@ CREATE TABLE `leave` (
     attachment_original_name VARCHAR(255) NOT NULL,
     attachment_path VARCHAR(255) NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_requests_user FOREIGN KEY (user_id)
-        REFERENCES users (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-    CONSTRAINT fk_requests_approver FOREIGN KEY (approver_id)
-        REFERENCES users (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    KEY fk_requests_user (user_id),
+    KEY fk_requests_approver (approver_id),
     CONSTRAINT ck_requests_status CHECK (status IN (0, 1, 2)),
     CONSTRAINT ck_leave_type CHECK (leave_type IN (1, 2, 3, 4)),
     CONSTRAINT ck_requests_dates CHECK (start_date <= end_date)

@@ -216,12 +216,12 @@ function countAttachmentUsage($db, $attachmentPath) {
     return (int) $row['total'];
 }
 
-// Lấy các đơn mới nhất trong phạm vi được xem.
-function findDashboardLeaves($db, $currentUser) {
+// Lấy đơn trên dashboard theo phạm vi và phân trang.
+function findDashboardLeaves($db, $currentUser, $perPage, $offset) {
     $statement = $db->prepare(readSql('dashboard_leaves'));
     $userType = (int) $currentUser['user_type'];
     $department = (int) $currentUser['department'];
-    $statement->bind_param('ii', $userType, $department);
+    $statement->bind_param('iiii', $userType, $department, $perPage, $offset);
     $statement->execute();
     $result = $statement->get_result();
     $leaves = [];

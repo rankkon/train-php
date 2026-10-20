@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/functions/helpers.php';
+require_once __DIR__ . '/functions/message.php';
 
 $sidebarPage = '';
 if (isset($_SERVER['SCRIPT_NAME'])) {

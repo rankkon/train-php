@@ -44,13 +44,13 @@ WHERE id = ? AND user_type = 3 AND status = 1
 
 -- name: dashboard_leaves
 SELECT users.full_name, `leave`.leave_type,
-       `leave`.created_at, `leave`.status, `leave`.start_date,
+       `leave`.created_at, `leave`.status,
        `leave`.end_date, `leave`.title
 FROM `leave`
 JOIN users ON users.id = `leave`.user_id
 WHERE (? = 3 OR users.department = ?)
 ORDER BY `leave`.created_at DESC, `leave`.id DESC
-LIMIT 30
+LIMIT ? OFFSET ?
 
 -- name: leave_type_search
 SELECT leave_type
