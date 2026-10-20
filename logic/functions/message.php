@@ -44,6 +44,8 @@ const MSG_CONFIRMATION_INVALID = 'Vui lòng nhấn Tiếp theo để kiểm tra 
 const MSG_SAVE_CONFIRMATION_REQUIRED = 'Vui lòng nhấn Lưu lại và xác nhận trước khi lưu đơn.';
 const MSG_CONFIRMATION_TITLE = 'Thông báo';
 const MSG_CONFIRM_LOGOUT = 'Bạn có chắc chắn muốn đăng xuất?';
+const MSG_CONFIRM_LEAVE_EXIT = 'Bạn có chắc chắn hủy các thay đổi và thoát khỏi trang?';
+const MSG_CONFIRM_LEAVE_LOGOUT = 'Bạn có chắc chắn hủy các thay đổi và đăng xuất?';
 const MSG_CONFIRM_SAVE = 'Bạn có chắc chắn lưu lại thay đổi ?';
 const MSG_SAVE_FAILED = 'Không thể lưu đơn. Dữ liệu và tệp vẫn được giữ để bạn thử lại.';
 

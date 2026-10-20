@@ -82,6 +82,9 @@ $values = $defaultValues;
 $errors = [];
 $isConfirmation = false;
 $showSavePopup = false;
+$showExitPopup = false;
+$exitDestination = '';
+$exitMessage = MSG_CONFIRM_LEAVE_EXIT;
 
 if ($requestMethod === 'GET') {
     clearLeaveDraft();
@@ -92,8 +95,12 @@ if (isset($_SESSION['leave_create_draft'])) {
     $draft = $_SESSION['leave_create_draft'];
 }
 if ($draft && (int) $draft['user_id'] === $currentUserId
-    && isset($draft['leave_id']) && (int) $draft['leave_id'] === $leaveId) {
+    && isset($draft['leave_id']) && (int) $draft['leave_id'] === $leaveId
+    && isset($_SESSION['leave_create_initial'])) {
     $values = $draft['values'];
+    if (isset($draft['errors'])) {
+        $errors = $draft['errors'];
+    }
 } else {
     clearLeaveDraft();
     $draft = null;
@@ -101,6 +108,14 @@ if ($draft && (int) $draft['user_id'] === $currentUserId
         foreach ($values as $field => $value) {
             $values[$field] = (string) $leave[$field];
         }
+        $selectedApproverId = $defaultValues['approver_id'];
+        foreach ($approvers as $approver) {
+            if ($values['approver_id'] === (string) $approver['id']) {
+                $selectedApproverId = $values['approver_id'];
+                break;
+            }
+        }
+        $values['approver_id'] = $selectedApproverId;
         $savedAttachment = readSavedLeaveAttachment($leave, $currentUserId);
 
         if ($savedAttachment && validateLeaveAttachment(
@@ -119,6 +134,22 @@ if ($attachment && (int) $attachment['user_id'] !== $currentUserId) {
     unset($_SESSION['leave_create_attachment']);
     $attachment = null;
 }
+
+if (!isset($_SESSION['leave_create_initial'])) {
+    $_SESSION['leave_create_initial'] = [
+        'values' => $values,
+        'attachment' => leaveAttachmentFingerprint($attachment),
+    ];
+    $draft = [
+        'user_id' => $currentUserId,
+        'leave_id' => $leaveId,
+        'values' => $values,
+        'confirmed' => false,
+        'errors' => [],
+    ];
+    $_SESSION['leave_create_draft'] = $draft;
+}
+$initialForm = $_SESSION['leave_create_initial'];
 
 if ($requestMethod !== 'POST') {
     return;
@@ -143,10 +174,94 @@ if (!$_POST && !$_FILES && $contentLength > 0) {
     return;
 }
 
+$exitActions = [
+    'exit_dashboard' => 'dashboard.php',
+    'exit_users' => 'user_list.php',
+    'exit_list' => 'leave_list.php',
+    'exit_logout' => 'logout',
+];
+
+if (isset($exitActions[$action])) {
+    $exitDestination = $exitActions[$action];
+    $isConfirmation = !empty($draft['confirmed']);
+    unset($_SESSION['leave_create_save_pending'], $_SESSION['leave_create_exit']);
+    $uploadError = '';
+    $hasInvalidValues = false;
+
+    if (!$isConfirmation) {
+        $form = readLeaveValues($_POST);
+        $values = $form['values'];
+        $hasInvalidValues = !empty($form['errors']);
+        foreach ($form['errors'] as $field => $message) {
+            $errors[$field] = $message;
+        }
+
+        $upload = readLeaveUpload($_FILES, $attachment, $currentUserId, $maxAttachmentSize, true);
+        $attachment = $upload['attachment'];
+        $uploadError = $upload['error'];
+        if ($attachment) {
+            $_SESSION['leave_create_attachment'] = $attachment;
+        } else {
+            unset($_SESSION['leave_create_attachment']);
+        }
+        if ($uploadError !== '') {
+            $errors['attachment'] = $uploadError;
+        }
+        $_SESSION['leave_create_draft'] = [
+            'user_id' => $currentUserId,
+            'leave_id' => $leaveId,
+            'values' => $values,
+            'confirmed' => false,
+            'errors' => $errors,
+        ];
+    }
+
+    $hasChanges = hasLeaveFormChanges($values, $attachment, $initialForm);
+    if ($hasChanges || $uploadError !== '' || $hasInvalidValues) {
+        $_SESSION['leave_create_exit'] = $exitDestination;
+        $showExitPopup = true;
+        if ($exitDestination === 'logout') {
+            $exitMessage = MSG_CONFIRM_LEAVE_LOGOUT;
+        }
+        return;
+    }
+    if ($exitDestination === 'logout') {
+        $_SESSION['leave_create_exit'] = $exitDestination;
+        $showExitPopup = true;
+        $exitMessage = MSG_CONFIRM_LOGOUT;
+        return;
+    }
+    clearLeaveDraft();
+    header('Location: ../views/' . $exitDestination, true, 303);
+    exit;
+}
+
+if ($action === 'confirm_exit' || $action === 'cancel_exit') {
+    $isConfirmation = !empty($draft['confirmed']);
+    if (!isset($_SESSION['leave_create_exit'])
+        || ($action === 'confirm_exit' && $_SESSION['leave_create_exit'] === 'logout')) {
+        http_response_code(400);
+        $errors['form'] = MSG_INVALID_ACTION;
+        return;
+    }
+    $exitDestination = $_SESSION['leave_create_exit'];
+    unset($_SESSION['leave_create_exit']);
+    if ($action === 'cancel_exit') {
+        return;
+    }
+    clearLeaveDraft();
+    header('Location: ../views/' . $exitDestination, true, 303);
+    exit;
+}
+
+unset($_SESSION['leave_create_exit']);
+
 if ($action === 'clear') {
     clearLeaveDraft();
+    $_SESSION['leave_create_initial'] = $initialForm;
     $values = $defaultValues;
     $attachment = null;
+    $errors = [];
 
     $_SESSION['leave_create_draft'] = [
         'user_id' => $currentUserId,
@@ -171,6 +286,7 @@ if ($action === 'validate') {
     unset($_SESSION['leave_create_save_pending']);
     $form = readLeaveValues($_POST);
     $values = $form['values'];
+    $values['title'] = trim($values['title']);
     $errors = $form['errors'];
 
     $fieldErrors = validateLeaveFields($values, $approvers, $leaveTypes, $minimumDate);
@@ -199,6 +315,7 @@ if ($action === 'validate') {
         'leave_id' => $leaveId,
         'values' => $values,
         'confirmed' => $isConfirmation,
+        'errors' => $errors,
     ];
     return;
 }

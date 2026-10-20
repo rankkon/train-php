@@ -60,12 +60,11 @@ function readLeaveValues($post) {
         }
         $values[$field] = $post[$field];
     }
-    $values['title'] = trim($values['title']);
     return ['values' => $values, 'errors' => $errors];
 }
 
 // Đọc file mới hoặc giữ file trong session.
-function readLeaveUpload($files, $attachment, $userId, $maxSize) {
+function readLeaveUpload($files, $attachment, $userId, $maxSize, $keepTemporary = false) {
     $result = ['attachment' => $attachment, 'error' => ''];
     if (count($files) > 1) {
         $result['error'] = MSG_ATTACHMENT_SINGLE_ONLY;
@@ -89,19 +88,57 @@ function readLeaveUpload($files, $attachment, $userId, $maxSize) {
                 $result['error'] = MSG_ATTACHMENT_READ_FAILED;
                 return $result;
             }
-            $result['error'] = validateLeaveAttachment($name, $data, $maxSize);
-            if ($result['error'] !== '') {
-                return $result;
+            if (!$keepTemporary) {
+                $result['error'] = validateLeaveAttachment($name, $data, $maxSize);
+                if ($result['error'] !== '') {
+                    return $result;
+                }
             }
-            $result['attachment'] = ['user_id' => $userId, 'name' => $name, 'data' => $data];
+            $result['attachment'] = [
+                'user_id' => $userId,
+                'name' => $name,
+                'data' => $data,
+                'temporary' => $keepTemporary,
+            ];
             return $result;
         }
     }
 
-    if (!$result['attachment']) {
+    if (!$keepTemporary && $result['attachment'] && !empty($result['attachment']['temporary'])) {
+        $result['error'] = validateLeaveAttachment(
+            $result['attachment']['name'], $result['attachment']['data'], $maxSize
+        );
+        if ($result['error'] === '') {
+            $result['attachment']['temporary'] = false;
+        }
+    }
+    if (!$keepTemporary && !$result['attachment']) {
         $result['error'] = MSG_ATTACHMENT_REQUIRED;
     }
     return $result;
+}
+
+// Lấy tên và dấu vân tay nội dung để so sánh file.
+function leaveAttachmentFingerprint($attachment) {
+    if (!$attachment) {
+        return null;
+    }
+    return [
+        'name' => $attachment['name'],
+        'hash' => hash('sha256', $attachment['data']),
+    ];
+}
+
+// So sánh dữ liệu hiện tại với dữ liệu khi mở form.
+function hasLeaveFormChanges($values, $attachment, $initialForm) {
+    foreach ($initialForm['values'] as $field => $initialValue) {
+        $initialValue = str_replace(["\r\n", "\r"], "\n", $initialValue);
+        $currentValue = str_replace(["\r\n", "\r"], "\n", $values[$field]);
+        if ($currentValue !== $initialValue) {
+            return true;
+        }
+    }
+    return leaveAttachmentFingerprint($attachment) !== $initialForm['attachment'];
 }
 
 // Hủy bước xác nhận và giữ bản nháp.
@@ -115,5 +152,6 @@ function resetLeaveConfirmation() {
 // Xóa bản nháp, file tạm và trạng thái xác nhận.
 function clearLeaveDraft() {
     unset($_SESSION['leave_create_draft'], $_SESSION['leave_create_attachment'],
-        $_SESSION['leave_create_save_pending']);
+        $_SESSION['leave_create_save_pending'], $_SESSION['leave_create_initial'],
+        $_SESSION['leave_create_exit']);
 }

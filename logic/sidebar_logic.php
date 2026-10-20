@@ -10,3 +10,8 @@ $sidebarLeavePage = false;
 if ($sidebarPage === 'leave_list.php' || $sidebarPage === 'leave_create.php') {
     $sidebarLeavePage = true;
 }
+
+$sidebarConfirmLeave = false;
+if ($sidebarPage === 'leave_create.php') {
+    $sidebarConfirmLeave = true;
+}

@@ -17,12 +17,10 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
         <span class="site-description">Hệ thống quản lý đơn</span>
     </header>
 
-    <?php require __DIR__ . '/sidebar.php'; ?>
-
     <main class="leave-list leave-create">
         <h1 class="leave-form-title"><?= escapeHtml($formTitle) ?></h1>
 
-        <form class="leave-form<?php if ($isConfirmation): ?> leave-form-confirm<?php endif; ?>" method="post" action="<?= escapeHtml($formAction) ?>" enctype="multipart/form-data" novalidate>
+        <form id="leave-form" class="leave-form<?php if ($isConfirmation): ?> leave-form-confirm<?php endif; ?>" method="post" action="<?= escapeHtml($formAction) ?>" enctype="multipart/form-data" novalidate>
             <input type="hidden" name="MAX_FILE_SIZE" value="<?= escapeHtml($maxAttachmentSize) ?>">
 
             <div class="leave-form-fields">
@@ -162,5 +160,25 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
             <?php endif; ?>
         </form>
     </main>
+    <?php if ($showExitPopup): ?>
+        <div class="popup-overlay leave-exit-popup">
+            <section class="popup-dialog">
+                <header class="popup-header">
+                    <h2 class="popup-title"><?= escapeHtml(MSG_CONFIRMATION_TITLE) ?></h2>
+                    <button type="submit" form="leave-form" name="action" value="cancel_exit" class="popup-close" title="Đóng" formnovalidate></button>
+                </header>
+                <p class="popup-message"><?= escapeHtml($exitMessage) ?></p>
+                <div class="popup-actions">
+                    <?php if ($exitDestination === 'logout'): ?>
+                        <button type="submit" form="leave-form" formaction="../logic/logout.php" class="popup-button popup-confirm" formnovalidate>Đồng ý</button>
+                    <?php else: ?>
+                        <button type="submit" form="leave-form" name="action" value="confirm_exit" class="popup-button popup-confirm" formnovalidate>Đồng ý</button>
+                    <?php endif; ?>
+                    <button type="submit" form="leave-form" name="action" value="cancel_exit" class="popup-button popup-cancel" formnovalidate autofocus>Không</button>
+                </div>
+            </section>
+        </div>
+    <?php endif; ?>
+    <?php require __DIR__ . '/sidebar.php'; ?>
 </body>
 </html>
