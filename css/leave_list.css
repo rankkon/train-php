@@ -179,10 +179,6 @@
     border-right: 0;
 }
 
-.leave-table tbody tr:last-child td {
-    border-bottom: 0;
-}
-
 .leave-table td:nth-child(5),
 .leave-title {
     font-weight: 600;
@@ -262,7 +258,8 @@
 }
 
 .leave-management-table .leave-actions button,
-.leave-management-table .leave-actions a {
+.leave-management-table .leave-actions a,
+.user-row-actions button {
     width: 28px;
     height: 28px;
     padding: 0;

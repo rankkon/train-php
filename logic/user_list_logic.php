@@ -46,7 +46,7 @@ if ($page === false || $page < 1) {
     $page = 1;
 }
 
-$totalRows = countUsers($db, $search);
+$totalRows = countUsers($db, $currentUser, $search);
 $perPage = LIST_PER_PAGE;
 $totalPages = (int) ceil($totalRows / $perPage);
 if ($totalPages < 1) {
@@ -57,12 +57,13 @@ if ($page > $totalPages) {
 }
 
 $offset = ($page - 1) * $perPage;
-$users = findUsers($db, $search, $perPage, $offset);
+$users = findUsers($db, $currentUser, $search, $perPage, $offset);
 
 foreach ($users as $index => $user) {
     $users[$index]['code'] = str_pad((string) $user['id'], USER_CODE_LENGTH, '0', STR_PAD_LEFT);
     $users[$index]['created_date'] = displayDate($user['created_at']);
     $users[$index]['status_name'] = $userStatuses[$user['status']];
+    $users[$index]['show_actions'] = canManageUser($user, $currentUser);
 }
 
 $pagination = buildPagination($page, $totalPages, $search, 'user_list.php');

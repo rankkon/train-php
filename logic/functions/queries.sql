@@ -10,17 +10,19 @@ FROM users
 WHERE id = ?
 
 -- name: user_search
-WHERE (CASE WHEN id < 1000 THEN LPAD(id, 4, '0') ELSE CAST(id AS CHAR) END LIKE ? ESCAPE '!'
+AND (CASE WHEN id < 1000 THEN LPAD(id, 4, '0') ELSE CAST(id AS CHAR) END LIKE ? ESCAPE '!'
     OR full_name LIKE ? ESCAPE '!')
 
 -- name: user_count
 SELECT COUNT(*) AS total
 FROM users
+WHERE (? = 3 OR department = ?)
 {{where}}
 
 -- name: user_list
-SELECT id, full_name, created_at, status
+SELECT id, full_name, created_at, status, user_type, department
 FROM users
+WHERE (? = 3 OR department = ?)
 {{where}}
 ORDER BY created_at DESC, id DESC
 LIMIT ? OFFSET ?

@@ -28,7 +28,7 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
                 <button type="submit" class="leave-search-button">Tìm kiếm</button>
             </form>
             <div class="user-list-actions">
-                <button type="button" class="leave-add">Thêm mới</button>
+                <a href="user_create.php" class="leave-add">Thêm mới</a>
                 <button type="button" class="leave-add leave-cancel">Xóa nhiều</button>
             </div>
         </div>
@@ -57,10 +57,12 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
                             <td><?= escapeHtml($user['created_date']) ?></td>
                             <td><?= escapeHtml($user['status_name']) ?></td>
                             <td>
-                                <div class="leave-actions user-row-actions">
-                                    <button type="button" class="leave-edit">Sửa</button>
-                                    <button type="button" class="leave-cancel">Xóa</button>
-                                </div>
+                                <?php if ($user['show_actions']): ?>
+                                    <div class="leave-actions user-row-actions">
+                                        <button type="button" class="leave-edit" title="Sửa">✎</button>
+                                        <button type="button" class="leave-cancel" title="Xóa">×</button>
+                                    </div>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . '/const.php';
 
+$userTypes = [
+    USER_TYPE_USER => 'User',
+    USER_TYPE_MANAGER => 'Manager',
+    USER_TYPE_ADMIN => 'Admin',
+];
+
 $departments = [
     DEPARTMENT_MANAGEMENT => 'Ban quản lý',
     DEPARTMENT_HUMAN_RESOURCES => 'Nhân sự',

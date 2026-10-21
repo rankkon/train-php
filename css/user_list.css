@@ -52,6 +52,7 @@
 
 .user-row-actions {
     justify-content: flex-end;
+    gap: 15px;
 }
 
 @media (max-width: 1200px) {

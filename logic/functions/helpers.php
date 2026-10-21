@@ -48,6 +48,19 @@ function canEditLeave($leave, $user) {
     return (int) $leave['status'] === LEAVE_STATUS_NEW;
 }
 
+// Kiểm tra quyền hiển thị nút sửa và khóa tài khoản.
+function canManageUser($targetUser, $currentUser) {
+    if ((int) $currentUser['user_type'] === USER_TYPE_ADMIN) {
+        return true;
+    }
+    if ((int) $currentUser['user_type'] !== USER_TYPE_MANAGER
+        || (int) $targetUser['user_type'] !== USER_TYPE_USER
+        || (int) $targetUser['department'] !== (int) $currentUser['department']) {
+        return false;
+    }
+    return true;
+}
+
 // Tạo link phân trang kèm từ khóa.
 function pageUrl($pageNumber, $search, $pageFile = 'leave_list.php') {
     $parameters = ['q' => $search, 'page' => $pageNumber];

@@ -60,17 +60,21 @@ function searchPattern($search) {
     return '%' . $pattern . '%';
 }
 
-// Đếm người dùng theo từ khóa.
-function countUsers($db, $search) {
+// Đếm người dùng theo phạm vi phòng ban và từ khóa.
+function countUsers($db, $currentUser, $search) {
     $where = '';
     if ($search !== '') {
         $where = readSql('user_search');
     }
     $sql = str_replace('{{where}}', $where, readSql('user_count'));
     $statement = $db->prepare($sql);
+    $userType = (int) $currentUser['user_type'];
+    $department = (int) $currentUser['department'];
     if ($search !== '') {
         $pattern = searchPattern($search);
-        $statement->bind_param('ss', $pattern, $pattern);
+        $statement->bind_param('iiss', $userType, $department, $pattern, $pattern);
+    } else {
+        $statement->bind_param('ii', $userType, $department);
     }
     $statement->execute();
     $result = $statement->get_result();
@@ -80,19 +84,21 @@ function countUsers($db, $search) {
     return $total;
 }
 
-// Lấy danh sách người dùng theo trang.
-function findUsers($db, $search, $perPage, $offset) {
+// Lấy người dùng theo phạm vi phòng ban, từ khóa và trang.
+function findUsers($db, $currentUser, $search, $perPage, $offset) {
     $where = '';
     if ($search !== '') {
         $where = readSql('user_search');
     }
     $sql = str_replace('{{where}}', $where, readSql('user_list'));
     $statement = $db->prepare($sql);
+    $userType = (int) $currentUser['user_type'];
+    $department = (int) $currentUser['department'];
     if ($search !== '') {
         $pattern = searchPattern($search);
-        $statement->bind_param('ssii', $pattern, $pattern, $perPage, $offset);
+        $statement->bind_param('iissii', $userType, $department, $pattern, $pattern, $perPage, $offset);
     } else {
-        $statement->bind_param('ii', $perPage, $offset);
+        $statement->bind_param('iiii', $userType, $department, $perPage, $offset);
     }
     $statement->execute();
     $result = $statement->get_result();
