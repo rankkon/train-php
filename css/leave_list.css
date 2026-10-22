@@ -69,10 +69,6 @@
     color: #1E1E1E;
 }
 
-.leave-search input::placeholder {
-    color: #B3B3B3;
-}
-
 .leave-search-button,
 .leave-add {
     display: inline-flex;

@@ -22,7 +22,7 @@ require dirname(__DIR__) . '/logic/user_create_logic.php';
     <main class="user-create">
         <h1 class="user-form-title">Thêm mới người dùng</h1>
 
-        <form method="post" action="user_create.php" id="user-form" class="user-form<?php if ($isConfirmation): ?> user-form-confirm<?php endif; ?>" novalidate>
+        <form method="post" id="user-form" class="user-form<?php if ($isConfirmation): ?> user-form-confirm<?php endif; ?>" novalidate>
             <div class="user-form-fields">
                 <?php if (isset($errors['form'])): ?>
                     <p class="user-field-error"><?= escapeHtml($errors['form']) ?></p>
@@ -100,7 +100,7 @@ require dirname(__DIR__) . '/logic/user_create_logic.php';
                         <select id="department" name="department" required
                             <?php if ($isConfirmation): ?>disabled<?php endif; ?>
                             <?php if (isset($errors['department'])): ?>class="user-input-error"<?php endif; ?>>
-                            <?php foreach ($departments as $code => $name): ?>
+                            <?php foreach ($newUserDepartments as $code => $name): ?>
                                 <option value="<?= escapeHtml($code) ?>" <?php if ($values['department'] === (string) $code): ?>selected<?php endif; ?>><?= escapeHtml($name) ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -113,30 +113,45 @@ require dirname(__DIR__) . '/logic/user_create_logic.php';
 
             <div class="user-form-actions">
                 <?php if ($isConfirmation): ?>
-                    <button type="button" class="user-form-next" disabled>Lưu lại</button>
-                    <button type="submit" name="action" value="back" class="user-form-clear" formnovalidate>Quay lại</button>
+                    <button name="action" value="confirm_save" class="user-form-next">Lưu lại</button>
+                    <button name="action" value="back" class="user-form-clear">Quay lại</button>
                 <?php else: ?>
-                    <button type="submit" name="action" value="validate" class="user-form-next">Tiếp theo</button>
-                    <button type="submit" name="action" value="clear" class="user-form-clear" formnovalidate>Xóa trống</button>
+                    <button name="action" value="validate" class="user-form-next">Tiếp theo</button>
+                    <button name="action" value="clear" class="user-form-clear">Xóa trống</button>
                 <?php endif; ?>
             </div>
         </form>
     </main>
+    <?php if ($showSavePopup): ?>
+        <div class="popup-overlay">
+            <section class="popup-dialog">
+                <header class="popup-header">
+                    <h2 class="popup-title"><?= escapeHtml(MSG_CONFIRMATION_TITLE) ?></h2>
+                    <button form="user-form" name="action" value="cancel_save" class="popup-close" title="Đóng"></button>
+                </header>
+                <p class="popup-message"><?= escapeHtml(MSG_CONFIRM_SAVE) ?></p>
+                <div class="popup-actions">
+                    <button form="user-form" name="action" value="save" class="popup-button popup-confirm">Đồng ý</button>
+                    <button form="user-form" name="action" value="cancel_save" class="popup-button popup-cancel" autofocus>Không</button>
+                </div>
+            </section>
+        </div>
+    <?php endif; ?>
     <?php if ($showExitPopup): ?>
         <div class="popup-overlay">
             <section class="popup-dialog">
                 <header class="popup-header">
                     <h2 class="popup-title"><?= escapeHtml(MSG_CONFIRMATION_TITLE) ?></h2>
-                    <button type="submit" form="user-form" name="action" value="cancel_exit" class="popup-close" title="Đóng" formnovalidate></button>
+                    <button form="user-form" name="action" value="cancel_exit" class="popup-close" title="Đóng"></button>
                 </header>
                 <p class="popup-message"><?= escapeHtml($exitMessage) ?></p>
                 <div class="popup-actions">
                     <?php if ($exitDestination === 'logout'): ?>
-                        <button type="submit" form="user-form" formaction="../logic/logout.php" class="popup-button popup-confirm" formnovalidate>Đồng ý</button>
+                        <button form="user-form" formaction="../logic/logout.php" class="popup-button popup-confirm">Đồng ý</button>
                     <?php else: ?>
-                        <button type="submit" form="user-form" name="action" value="confirm_exit" class="popup-button popup-confirm" formnovalidate>Đồng ý</button>
+                        <button form="user-form" name="action" value="confirm_exit" class="popup-button popup-confirm">Đồng ý</button>
                     <?php endif; ?>
-                    <button type="submit" form="user-form" name="action" value="cancel_exit" class="popup-button popup-cancel" formnovalidate autofocus>Không</button>
+                    <button form="user-form" name="action" value="cancel_exit" class="popup-button popup-cancel" autofocus>Không</button>
                 </div>
             </section>
         </div>

@@ -22,15 +22,17 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
 
     <main class="leave-list">
         <div class="leave-list-toolbar">
-            <form method="get" action="user_list.php" class="leave-search user-search">
+            <form method="get" class="leave-search user-search">
                 <label for="user-search">Mã/Tên user</label>
                 <input type="text" id="user-search" name="q" value="<?= escapeHtml($search) ?>">
-                <button type="submit" class="leave-search-button">Tìm kiếm</button>
+                <button class="leave-search-button">Tìm kiếm</button>
             </form>
-            <div class="user-list-actions">
-                <a href="user_create.php" class="leave-add">Thêm mới</a>
-                <button type="button" class="leave-add leave-cancel">Xóa nhiều</button>
-            </div>
+            <?php if ($showUserListActions): ?>
+                <div class="user-list-actions">
+                    <a href="user_create.php" class="leave-add">Thêm mới</a>
+                    <button type="button" class="leave-add leave-cancel">Xóa nhiều</button>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="leave-table-container">
@@ -70,30 +72,7 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
             </table>
         </div>
 
-        <nav class="leave-pagination">
-            <?php if ($previousPageUrl !== null): ?>
-                <a href="<?= escapeHtml($previousPageUrl) ?>" class="leave-page-previous">← Previous</a>
-            <?php else: ?>
-                <span class="leave-page-previous leave-page-disabled">← Previous</span>
-            <?php endif; ?>
-
-            <?php foreach ($pagination as $link): ?>
-                <?php if ($link['show_gap']): ?>
-                    <span class="leave-page-gap">…</span>
-                <?php endif; ?>
-                <?php if ($link['current']): ?>
-                    <span class="leave-page-current"><?= escapeHtml($link['number']) ?></span>
-                <?php else: ?>
-                    <a href="<?= escapeHtml($link['url']) ?>"><?= escapeHtml($link['number']) ?></a>
-                <?php endif; ?>
-            <?php endforeach; ?>
-
-            <?php if ($nextPageUrl !== null): ?>
-                <a href="<?= escapeHtml($nextPageUrl) ?>" class="leave-page-next">Next →</a>
-            <?php else: ?>
-                <span class="leave-page-next leave-page-disabled">Next →</span>
-            <?php endif; ?>
-        </nav>
+        <?php require __DIR__ . '/pagination.php'; ?>
     </main>
     <script>
         const selectAllUsers = document.getElementById('select-all-users');

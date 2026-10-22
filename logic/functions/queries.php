@@ -40,9 +40,23 @@ function findUserForLogin($db, $username) {
     return $user;
 }
 
-// Lấy quyền và trạng thái hiện tại của tài khoản.
-function findUserById($db, $userId) {
+// Lấy tài khoản theo email.
+function findUserByEmail($db, $email) {
+    $statement = $db->prepare(readSql('user_by_email'));
+    $statement->bind_param('s', $email);
+    $statement->execute();
+    $result = $statement->get_result();
+    $user = $result->fetch_assoc();
+    $statement->close();
+    return $user;
+}
+
+// Lấy quyền, trạng thái tài khoản và khóa dòng khi cần.
+function findUserById($db, $userId, $forUpdate = false) {
     $sql = readSql('current_user');
+    if ($forUpdate) {
+        $sql .= "\n" . readSql('lock_row');
+    }
     $statement = $db->prepare($sql);
     $statement->bind_param('i', $userId);
     $statement->execute();
@@ -50,6 +64,29 @@ function findUserById($db, $userId) {
     $user = $result->fetch_assoc();
     $statement->close();
     return $user;
+}
+
+// Thêm người dùng mới với các trường tùy chọn có thể để NULL.
+function insertUser($db, $values, $passwordHash, $createdAt) {
+    $statement = $db->prepare(readSql('user_insert'));
+    $email = null;
+    if ($values['email'] !== '') {
+        $email = $values['email'];
+    }
+    $birthDate = null;
+    if ($values['birth_date'] !== '') {
+        $birthDate = $values['birth_date'];
+    }
+    $userType = (int) $values['user_type'];
+    $department = (int) $values['department'];
+    $status = USER_STATUS_ACTIVE;
+    $statement->bind_param(
+        'sssssiiis',
+        $values['username'], $values['full_name'], $passwordHash, $email, $birthDate,
+        $userType, $department, $status, $createdAt
+    );
+    $statement->execute();
+    $statement->close();
 }
 
 // Chuẩn bị từ khóa tìm kiếm cho LIKE.
@@ -79,9 +116,8 @@ function countUsers($db, $currentUser, $search) {
     $statement->execute();
     $result = $statement->get_result();
     $row = $result->fetch_assoc();
-    $total = (int) $row['total'];
     $statement->close();
-    return $total;
+    return (int) $row['total'];
 }
 
 // Lấy người dùng theo phạm vi phòng ban, từ khóa và trang.
@@ -278,9 +314,8 @@ function countLeaves($db, $currentUser, $search, $searchWhere) {
     $statement->execute();
     $result = $statement->get_result();
     $row = $result->fetch_assoc();
-    $total = (int) $row['total'];
     $statement->close();
-    return $total;
+    return (int) $row['total'];
 }
 
 // Lấy danh sách đơn theo phạm vi và phân trang.

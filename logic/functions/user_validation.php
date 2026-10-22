@@ -3,6 +3,21 @@ require_once __DIR__ . '/const.php';
 require_once __DIR__ . '/message.php';
 require_once __DIR__ . '/helpers.php';
 
+// Lấy loại người dùng và phòng ban được phép chọn khi thêm tài khoản.
+function userCreateOptions($currentUser, $userTypes, $departments) {
+    $newUserTypes = [
+        USER_TYPE_USER => $userTypes[USER_TYPE_USER],
+        USER_TYPE_MANAGER => $userTypes[USER_TYPE_MANAGER],
+    ];
+    $newUserDepartments = $departments;
+    if ((int) $currentUser['user_type'] === USER_TYPE_MANAGER) {
+        $newUserTypes = [USER_TYPE_USER => $userTypes[USER_TYPE_USER]];
+        $departmentCode = (int) $currentUser['department'];
+        $newUserDepartments = [$departmentCode => $departments[$departmentCode]];
+    }
+    return ['user_types' => $newUserTypes, 'departments' => $newUserDepartments];
+}
+
 // Kiểm tra tên đăng nhập bắt buộc, định dạng và độ dài.
 function validateUsername($username) {
     if ($username === '') {
@@ -69,7 +84,7 @@ function validateUserBirthDate($birthDate) {
 }
 
 // Kiểm tra từng trường người dùng chưa có lỗi kiểu dữ liệu.
-function validateUserFields($values, $newUserTypes, $departments, $errors) {
+function validateUserFields($values, $newUserTypes, $newUserDepartments, $errors) {
     foreach ($values as $field => $value) {
         if (isset($errors[$field])) {
             continue;
@@ -87,7 +102,7 @@ function validateUserFields($values, $newUserTypes, $departments, $errors) {
             $message = validateUserBirthDate($value);
         } elseif ($field === 'user_type' && !isset($newUserTypes[$value])) {
             $message = MSG_USER_TYPE_INVALID;
-        } elseif ($field === 'department' && !isset($departments[$value])) {
+        } elseif ($field === 'department' && !isset($newUserDepartments[$value])) {
             $message = MSG_USER_DEPARTMENT_INVALID;
         }
         if ($message !== '') {

@@ -8,13 +8,13 @@ require dirname(__DIR__) . '/logic/sidebar_logic.php';
 <aside class="sidebar">
     <nav class="menu-list">
         <?php if ($sidebarFormId !== ''): ?>
-            <button type="submit" form="<?= escapeHtml($sidebarFormId) ?>" name="action" value="exit_dashboard" class="menu-item" formnovalidate>
+            <button form="<?= escapeHtml($sidebarFormId) ?>" name="action" value="exit_dashboard" class="menu-item">
                 <span class="menu-label">Dashboard</span>
             </button>
-            <button type="submit" form="<?= escapeHtml($sidebarFormId) ?>" name="action" value="exit_users" class="menu-item<?php if ($sidebarUserPage): ?> menu-active<?php endif; ?>" formnovalidate>
+            <button form="<?= escapeHtml($sidebarFormId) ?>" name="action" value="exit_users" class="menu-item<?php if ($sidebarUserPage): ?> menu-active<?php endif; ?>">
                 <span class="menu-label">Quản lý người dùng</span>
             </button>
-            <button type="submit" form="<?= escapeHtml($sidebarFormId) ?>" name="action" value="exit_list" class="menu-item<?php if ($sidebarLeavePage): ?> menu-active<?php endif; ?>" formnovalidate>
+            <button form="<?= escapeHtml($sidebarFormId) ?>" name="action" value="exit_list" class="menu-item<?php if ($sidebarLeavePage): ?> menu-active<?php endif; ?>">
                 <span class="menu-label">Quản lý đơn</span>
             </button>
         <?php else: ?>
@@ -29,7 +29,7 @@ require dirname(__DIR__) . '/logic/sidebar_logic.php';
             </a>
         <?php endif; ?>
         <?php if ($sidebarFormId !== ''): ?>
-            <button type="submit" form="<?= escapeHtml($sidebarFormId) ?>" name="action" value="exit_logout" class="menu-item" formnovalidate>
+            <button form="<?= escapeHtml($sidebarFormId) ?>" name="action" value="exit_logout" class="menu-item">
                 <span class="menu-label">Đăng xuất</span>
             </button>
         <?php else: ?>
@@ -48,7 +48,7 @@ require dirname(__DIR__) . '/logic/sidebar_logic.php';
         </header>
         <p class="popup-message"><?= escapeHtml(MSG_CONFIRM_LOGOUT) ?></p>
         <div class="popup-actions">
-            <button type="submit" class="popup-button popup-confirm">OK</button>
+            <button class="popup-button popup-confirm">OK</button>
             <label for="logout-confirm-toggle" class="popup-button popup-cancel">Cancel</label>
         </div>
     </form>

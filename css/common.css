@@ -126,12 +126,6 @@
     cursor: pointer;
 }
 
-.sidebar .menu-list > form {
-    flex: 0 0 auto;
-    margin: 0;
-    width: 100%;
-}
-
 .sidebar .menu-label {
     min-width: 0;
     color: inherit;

@@ -21,7 +21,7 @@ require dirname(__DIR__) . '/logic/login_logic.php';
         <main class="login-container">
             <h1 class="login-title">Sanshin IT Solution</h1>
 
-            <form class="login-form" method="post" action="login.php" novalidate>
+            <form method="post" novalidate>
                 <div class="login-field login-username">
                     <label for="username">Tên đăng nhập</label>
                     <span class="required-marker">*</span>
@@ -53,10 +53,10 @@ require dirname(__DIR__) . '/logic/login_logic.php';
                 </div>
 
                 <div class="login-actions">
-                    <button type="submit" class="button-login">
+                    <button class="button-login">
                         <span class="button-text">Login</span>
                     </button>
-                    <button type="submit" class="button-clear" name="action" value="clear" formnovalidate>
+                    <button class="button-clear" name="action" value="clear">
                         <span class="button-text">Clear</span>
                     </button>
                 </div>

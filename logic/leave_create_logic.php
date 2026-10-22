@@ -39,7 +39,6 @@ if (!$currentUser || (int) $currentUser['status'] !== USER_STATUS_ACTIVE) {
 $leaveId = 0;
 $leave = null;
 $formTitle = 'Thêm mới đơn';
-$formAction = 'leave_create.php';
 if (isset($_GET['id'])) {
     $leaveId = filter_var($_GET['id'], FILTER_VALIDATE_INT);
     if ($leaveId === false || $leaveId < 1) {
@@ -56,7 +55,6 @@ if (isset($_GET['id'])) {
         exit(MSG_LEAVE_EDIT_FORBIDDEN);
     }
     $formTitle = 'Sửa đơn';
-    $formAction .= '?id=' . $leaveId;
 }
 
 $approvers = findApprovers($db, $currentUser);
@@ -84,7 +82,7 @@ $isConfirmation = false;
 $showSavePopup = false;
 $showExitPopup = false;
 $exitDestination = '';
-$exitMessage = MSG_CONFIRM_LEAVE_EXIT;
+$exitMessage = MSG_CONFIRM_EXIT;
 
 if ($requestMethod === 'GET') {
     clearLeaveDraft();
@@ -118,9 +116,7 @@ if ($draft && (int) $draft['user_id'] === $currentUserId
         $values['approver_id'] = $selectedApproverId;
         $savedAttachment = readSavedLeaveAttachment($leave, $currentUserId);
 
-        if ($savedAttachment && validateLeaveAttachment(
-            $savedAttachment['name'], $savedAttachment['data'], $maxAttachmentSize
-        ) === '') {
+        if ($savedAttachment) {
             $_SESSION['leave_create_attachment'] = $savedAttachment;
         }
     }
@@ -221,7 +217,7 @@ if (isset($exitActions[$action])) {
         $_SESSION['leave_create_exit'] = $exitDestination;
         $showExitPopup = true;
         if ($exitDestination === 'logout') {
-            $exitMessage = MSG_CONFIRM_LEAVE_LOGOUT;
+            $exitMessage = MSG_CONFIRM_LOGOUT_WITH_CHANGES;
         }
         return;
     }
@@ -273,7 +269,7 @@ if ($action === 'clear') {
 
         return;
     }
-    header('Location: ../views/' . $formAction, true, 303);
+    header('Location: ../views/leave_create.php', true, 303);
     exit;
 }
 
@@ -340,21 +336,6 @@ if ($action === 'cancel_save') {
 }
 
 if ($action === 'confirm_save') {
-    $messages = [
-        'approver_id' => validateLeaveApprover($values['approver_id'], $approvers),
-        'start_date' => validateLeaveDate($values['start_date'], 'Ngày bắt đầu', $minimumDate),
-        'end_date' => validateLeaveDate($values['end_date'], 'Ngày kết thúc', $minimumDate),
-    ];
-    foreach ($messages as $field => $message) {
-        if ($message !== '') {
-            $errors[$field] = $message;
-        }
-    }
-    if ($errors) {
-        resetLeaveConfirmation();
-        return;
-    }
-
     $isConfirmation = true;
     $_SESSION['leave_create_save_pending'] = true;
     $showSavePopup = true;

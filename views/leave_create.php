@@ -20,7 +20,7 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
     <main class="leave-list leave-create">
         <h1 class="leave-form-title"><?= escapeHtml($formTitle) ?></h1>
 
-        <form id="leave-form" class="leave-form<?php if ($isConfirmation): ?> leave-form-confirm<?php endif; ?>" method="post" action="<?= escapeHtml($formAction) ?>" enctype="multipart/form-data" novalidate>
+        <form id="leave-form" class="leave-form<?php if ($isConfirmation): ?> leave-form-confirm<?php endif; ?>" method="post" enctype="multipart/form-data" novalidate>
             <input type="hidden" name="MAX_FILE_SIZE" value="<?= escapeHtml($maxAttachmentSize) ?>">
 
             <div class="leave-form-fields">
@@ -34,7 +34,7 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                         <?php if ($isConfirmation): ?>disabled<?php endif; ?>
                         <?php if (isset($errors['title'])): ?>class="leave-input-error"<?php endif; ?>>
                     <?php if (isset($errors['title'])): ?>
-                        <p id="leave-title-error" class="leave-form-error"><?= escapeHtml($errors['title']) ?></p>
+                        <p class="leave-form-error"><?= escapeHtml($errors['title']) ?></p>
                     <?php endif; ?>
                 </div>
 
@@ -44,7 +44,7 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                         <?php if ($isConfirmation): ?>disabled<?php endif; ?>
                         <?php if (isset($errors['content'])): ?>class="leave-input-error"<?php endif; ?>><?= escapeHtml($values['content']) ?></textarea>
                     <?php if (isset($errors['content'])): ?>
-                        <p id="leave-content-error" class="leave-form-error"><?= escapeHtml($errors['content']) ?></p>
+                        <p class="leave-form-error"><?= escapeHtml($errors['content']) ?></p>
                     <?php endif; ?>
                 </div>
 
@@ -60,7 +60,7 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                         </select>
                     </div>
                     <?php if (isset($errors['approver_id'])): ?>
-                        <p id="leave-approver-error" class="leave-form-error"><?= escapeHtml($errors['approver_id']) ?></p>
+                        <p class="leave-form-error"><?= escapeHtml($errors['approver_id']) ?></p>
                     <?php endif; ?>
                 </div>
 
@@ -76,7 +76,7 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                         </select>
                     </div>
                     <?php if (isset($errors['leave_type'])): ?>
-                        <p id="leave-type-error" class="leave-form-error"><?= escapeHtml($errors['leave_type']) ?></p>
+                        <p class="leave-form-error"><?= escapeHtml($errors['leave_type']) ?></p>
                     <?php endif; ?>
                 </div>
 
@@ -91,7 +91,7 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                         <?php endif; ?>
                     </div>
                     <?php if (isset($errors['start_date'])): ?>
-                        <p id="leave-start-date-error" class="leave-form-error"><?= escapeHtml($errors['start_date']) ?></p>
+                        <p class="leave-form-error"><?= escapeHtml($errors['start_date']) ?></p>
                     <?php endif; ?>
                 </div>
 
@@ -106,11 +106,11 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                         <?php endif; ?>
                     </div>
                     <?php if (isset($errors['end_date'])): ?>
-                        <p id="leave-end-date-error" class="leave-form-error"><?= escapeHtml($errors['end_date']) ?></p>
+                        <p class="leave-form-error"><?= escapeHtml($errors['end_date']) ?></p>
                     <?php endif; ?>
                 </div>
 
-                <div class="leave-form-field leave-form-attachment">
+                <div class="leave-form-field">
                     <label<?php if (!$isConfirmation): ?> for="leave-attachment"<?php endif; ?>>Đính kèm <span class="required-marker">*</span></label>
                     <?php if ($isConfirmation): ?>
                         <span id="leave-attachment" class="leave-confirm-attachment" title="<?= escapeHtml($attachment['name']) ?>"><?= escapeHtml($attachment['name']) ?></span>
@@ -120,14 +120,12 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                                 title="<?= escapeHtml(sprintf(MSG_ATTACHMENT_HINT, ATTACHMENT_MAX_MB)) ?>"
                                 <?php if (isset($errors['attachment'])): ?>class="leave-input-error"<?php endif; ?>>
                             <?php if ($attachment): ?>
-                                <span id="leave-file-name" class="leave-file-name" title="<?= escapeHtml($attachment['name']) ?>"><?= escapeHtml($attachment['name']) ?></span>
-                            <?php else: ?>
-                                <span id="leave-file-name" class="leave-file-name" title=""></span>
+                                <span class="leave-file-name" title="<?= escapeHtml($attachment['name']) ?>"><?= escapeHtml($attachment['name']) ?></span>
                             <?php endif; ?>
                             <span class="leave-upload-icon"></span>
                         </div>
                         <?php if (isset($errors['attachment'])): ?>
-                            <p id="leave-attachment-error" class="leave-form-error"><?= escapeHtml($errors['attachment']) ?></p>
+                            <p class="leave-form-error"><?= escapeHtml($errors['attachment']) ?></p>
                         <?php endif; ?>
                     <?php endif; ?>
                 </div>
@@ -135,11 +133,11 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
 
             <div class="leave-form-actions">
                 <?php if ($isConfirmation): ?>
-                    <button type="submit" name="action" value="confirm_save" class="leave-form-next">Lưu lại</button>
-                    <button type="submit" name="action" value="back" class="leave-form-clear" formnovalidate>Quay lại</button>
+                    <button name="action" value="confirm_save" class="leave-form-next">Lưu lại</button>
+                    <button name="action" value="back" class="leave-form-clear">Quay lại</button>
                 <?php else: ?>
-                    <button type="submit" name="action" value="validate" class="leave-form-next">Tiếp theo</button>
-                    <button type="submit" name="action" value="clear" class="leave-form-clear" formnovalidate>Xóa trống</button>
+                    <button name="action" value="validate" class="leave-form-next">Tiếp theo</button>
+                    <button name="action" value="clear" class="leave-form-clear">Xóa trống</button>
                 <?php endif; ?>
             </div>
 
@@ -147,13 +145,13 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
                 <div class="popup-overlay">
                     <section class="popup-dialog">
                         <header class="popup-header">
-                            <h2 id="leave-save-title" class="popup-title"><?= escapeHtml(MSG_CONFIRMATION_TITLE) ?></h2>
-                            <button type="submit" name="action" value="cancel_save" class="popup-close"></button>
+                            <h2 class="popup-title"><?= escapeHtml(MSG_CONFIRMATION_TITLE) ?></h2>
+                            <button name="action" value="cancel_save" class="popup-close"></button>
                         </header>
-                        <p id="leave-save-message" class="popup-message"><?= escapeHtml(MSG_CONFIRM_SAVE) ?></p>
+                        <p class="popup-message"><?= escapeHtml(MSG_CONFIRM_SAVE) ?></p>
                         <div class="popup-actions">
-                            <button type="submit" name="action" value="save" class="popup-button popup-confirm">OK</button>
-                            <button type="submit" name="action" value="cancel_save" class="popup-button popup-cancel" autofocus>Cancel</button>
+                            <button name="action" value="save" class="popup-button popup-confirm">OK</button>
+                            <button name="action" value="cancel_save" class="popup-button popup-cancel" autofocus>Cancel</button>
                         </div>
                     </section>
                 </div>
@@ -161,20 +159,20 @@ require dirname(__DIR__) . '/logic/leave_create_logic.php';
         </form>
     </main>
     <?php if ($showExitPopup): ?>
-        <div class="popup-overlay leave-exit-popup">
+        <div class="popup-overlay">
             <section class="popup-dialog">
                 <header class="popup-header">
                     <h2 class="popup-title"><?= escapeHtml(MSG_CONFIRMATION_TITLE) ?></h2>
-                    <button type="submit" form="leave-form" name="action" value="cancel_exit" class="popup-close" title="Đóng" formnovalidate></button>
+                    <button form="leave-form" name="action" value="cancel_exit" class="popup-close" title="Đóng"></button>
                 </header>
                 <p class="popup-message"><?= escapeHtml($exitMessage) ?></p>
                 <div class="popup-actions">
                     <?php if ($exitDestination === 'logout'): ?>
-                        <button type="submit" form="leave-form" formaction="../logic/logout.php" class="popup-button popup-confirm" formnovalidate>Đồng ý</button>
+                        <button form="leave-form" formaction="../logic/logout.php" class="popup-button popup-confirm">Đồng ý</button>
                     <?php else: ?>
-                        <button type="submit" form="leave-form" name="action" value="confirm_exit" class="popup-button popup-confirm" formnovalidate>Đồng ý</button>
+                        <button form="leave-form" name="action" value="confirm_exit" class="popup-button popup-confirm">Đồng ý</button>
                     <?php endif; ?>
-                    <button type="submit" form="leave-form" name="action" value="cancel_exit" class="popup-button popup-cancel" formnovalidate autofocus>Không</button>
+                    <button form="leave-form" name="action" value="cancel_exit" class="popup-button popup-cancel" autofocus>Không</button>
                 </div>
             </section>
         </div>

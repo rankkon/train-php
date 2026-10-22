@@ -33,6 +33,9 @@ if (!$currentUser || (int) $currentUser['status'] !== USER_STATUS_ACTIVE) {
     exit;
 }
 
+$showUserListActions = (int) $currentUser['user_type'] === USER_TYPE_MANAGER
+    || (int) $currentUser['user_type'] === USER_TYPE_ADMIN;
+
 $search = '';
 if (isset($_GET['q']) && is_string($_GET['q'])) {
     $search = trim($_GET['q']);

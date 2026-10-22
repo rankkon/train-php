@@ -24,6 +24,7 @@ require_once __DIR__ . '/functions/queries.php';
 require_once __DIR__ . '/functions/helpers.php';
 require_once __DIR__ . '/functions/catalogs.php';
 require_once __DIR__ . '/functions/user_validation.php';
+require_once __DIR__ . '/functions/user_save.php';
 
 $currentUserId = (int) $_SESSION['user_id'];
 $currentUser = findUserById($db, $currentUserId);
@@ -34,10 +35,10 @@ if (!$currentUser || (int) $currentUser['status'] !== USER_STATUS_ACTIVE) {
     exit;
 }
 
-$newUserTypes = [
-    USER_TYPE_USER => $userTypes[USER_TYPE_USER],
-    USER_TYPE_MANAGER => $userTypes[USER_TYPE_MANAGER],
-];
+$options = userCreateOptions($currentUser, $userTypes, $departments);
+$newUserTypes = $options['user_types'];
+$newUserDepartments = $options['departments'];
+$departmentCodes = array_keys($newUserDepartments);
 
 $defaultValues = [
     'username' => '',
@@ -46,19 +47,20 @@ $defaultValues = [
     'email' => '',
     'birth_date' => '',
     'user_type' => (string) USER_TYPE_USER,
-    'department' => (string) DEPARTMENT_MANAGEMENT,
+    'department' => (string) $departmentCodes[0],
 ];
 $showExitPopup = false;
+$showSavePopup = false;
 $exitDestination = '';
-$exitMessage = MSG_CONFIRM_USER_EXIT;
+$exitMessage = MSG_CONFIRM_EXIT;
 
 if ($requestMethod === 'GET') {
-    unset($_SESSION['user_create_draft'], $_SESSION['user_create_exit']);
+    unset($_SESSION['user_create_draft'], $_SESSION['user_create_exit'], $_SESSION['user_create_save_pending']);
 }
 
 if (isset($_SESSION['user_create_draft'])
     && $_SESSION['user_create_draft']['user_id'] !== $currentUserId) {
-    unset($_SESSION['user_create_draft'], $_SESSION['user_create_exit']);
+    unset($_SESSION['user_create_draft'], $_SESSION['user_create_exit'], $_SESSION['user_create_save_pending']);
 }
 if (!isset($_SESSION['user_create_draft'])) {
     $_SESSION['user_create_draft'] = [
@@ -81,11 +83,16 @@ if ($requestMethod !== 'POST') {
 $action = 'validate';
 if (isset($_POST['action'])) {
     if (!is_string($_POST['action'])) {
+        unset($_SESSION['user_create_save_pending']);
         http_response_code(400);
         $errors['form'] = MSG_INVALID_ACTION;
         return;
     }
     $action = $_POST['action'];
+}
+
+if ($action !== 'save' && $action !== 'confirm_save') {
+    unset($_SESSION['user_create_save_pending']);
 }
 
 $exitActions = [
@@ -113,6 +120,46 @@ if ($action === 'confirm_exit' || $action === 'cancel_exit') {
 }
 
 unset($_SESSION['user_create_exit']);
+
+if ($action === 'confirm_save' || $action === 'cancel_save' || $action === 'save') {
+    if (!$isConfirmation) {
+        unset($_SESSION['user_create_save_pending']);
+        http_response_code(400);
+        $errors['form'] = MSG_USER_CONFIRMATION_INVALID;
+        return;
+    }
+    if ($action === 'cancel_save') {
+        return;
+    }
+    if ($action === 'confirm_save') {
+        $_SESSION['user_create_save_pending'] = true;
+        $showSavePopup = true;
+        return;
+    }
+    if (!isset($_SESSION['user_create_save_pending']) || $_SESSION['user_create_save_pending'] !== true) {
+        http_response_code(400);
+        $errors['form'] = MSG_USER_SAVE_CONFIRMATION_REQUIRED;
+        return;
+    }
+
+    unset($_SESSION['user_create_save_pending']);
+    $saving = saveUser($db, $currentUserId, $values, $userTypes, $departments);
+    $errors = $saving['errors'];
+    if ($saving['options'] !== null) {
+        $newUserTypes = $saving['options']['user_types'];
+        $newUserDepartments = $saving['options']['departments'];
+    }
+    if ($errors) {
+        $isConfirmation = false;
+        $_SESSION['user_create_draft']['confirmed'] = false;
+        $_SESSION['user_create_draft']['errors'] = $errors;
+        return;
+    }
+
+    unset($_SESSION['user_create_draft'], $_SESSION['user_create_exit']);
+    header('Location: ../views/user_list.php', true, 303);
+    exit;
+}
 
 if ($action === 'clear') {
     unset($_SESSION['user_create_draft']);
@@ -157,7 +204,7 @@ if ($action === 'validate' || !$isConfirmation) {
 
 if ($action === 'validate') {
     $isConfirmation = false;
-    $errors = validateUserFields($values, $newUserTypes, $departments, $errors);
+    $errors = validateUserFields($values, $newUserTypes, $newUserDepartments, $errors);
     if (!isset($errors['username'])) {
         $existingUser = findUserForLogin($db, $values['username']);
         if ($existingUser) {
@@ -185,7 +232,7 @@ if (isset($exitActions[$action])) {
         if ($exitDestination === 'logout') {
             $exitMessage = MSG_CONFIRM_LOGOUT;
             if ($hasChanges) {
-                $exitMessage = MSG_CONFIRM_USER_LOGOUT;
+                $exitMessage = MSG_CONFIRM_LOGOUT_WITH_CHANGES;
             }
         }
         return;

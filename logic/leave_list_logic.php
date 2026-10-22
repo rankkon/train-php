@@ -49,7 +49,6 @@ if ($page === false || $page < 1) {
 
 $processPopup = '';
 $processLeaveId = 0;
-$processMessage = MSG_CONFIRM_APPROVE;
 $cancelReason = '';
 $processErrors = [];
 

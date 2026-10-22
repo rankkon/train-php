@@ -6,15 +6,9 @@ $sidebarPage = '';
 if (isset($_SERVER['SCRIPT_NAME'])) {
     $sidebarPage = basename($_SERVER['SCRIPT_NAME']);
 }
-$sidebarUserPage = false;
-if ($sidebarPage === 'user_list.php' || $sidebarPage === 'user_create.php') {
-    $sidebarUserPage = true;
-}
+$sidebarUserPage = $sidebarPage === 'user_list.php' || $sidebarPage === 'user_create.php';
 
-$sidebarLeavePage = false;
-if ($sidebarPage === 'leave_list.php' || $sidebarPage === 'leave_create.php') {
-    $sidebarLeavePage = true;
-}
+$sidebarLeavePage = $sidebarPage === 'leave_list.php' || $sidebarPage === 'leave_create.php';
 
 $sidebarFormId = '';
 if ($sidebarPage === 'leave_create.php') {

@@ -4,6 +4,19 @@ FROM users
 WHERE username = ?
 LIMIT 1
 
+-- name: user_by_email
+SELECT id
+FROM users
+WHERE email = ?
+LIMIT 1
+
+-- name: user_insert
+INSERT INTO users (
+    username, full_name, password_hash, email, birth_date,
+    user_type, department, status, created_at, update_at
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)
+
 -- name: current_user
 SELECT id, user_type, department, status
 FROM users
