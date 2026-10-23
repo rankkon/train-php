@@ -35,7 +35,28 @@ if (!$currentUser || (int) $currentUser['status'] !== USER_STATUS_ACTIVE) {
     exit;
 }
 
-$options = userCreateOptions($currentUser, $userTypes, $departments);
+$editedUserId = 0;
+$editedUser = null;
+$formTitle = 'Thêm mới người dùng';
+if (isset($_GET['id'])) {
+    $editedUserId = filter_var($_GET['id'], FILTER_VALIDATE_INT);
+    if ($editedUserId === false || $editedUserId < 1) {
+        http_response_code(400);
+        exit(MSG_INVALID_FORM_VALUE);
+    }
+    $editedUser = findUserById($db, $editedUserId);
+    if (!$editedUser) {
+        http_response_code(404);
+        exit(MSG_USER_NOT_FOUND);
+    }
+    if (!canManageUser($editedUser, $currentUser)) {
+        http_response_code(403);
+        exit(MSG_USER_EDIT_FORBIDDEN);
+    }
+    $formTitle = 'Sửa người dùng';
+}
+$isAdminAccount = $editedUser && (int) $editedUser['user_type'] === USER_TYPE_ADMIN;
+$options = userCreateOptions($currentUser, $userTypes, $departments, $editedUser);
 $newUserTypes = $options['user_types'];
 $newUserDepartments = $options['departments'];
 $departmentCodes = array_keys($newUserDepartments);
@@ -49,6 +70,20 @@ $defaultValues = [
     'user_type' => (string) USER_TYPE_USER,
     'department' => (string) $departmentCodes[0],
 ];
+if ($editedUser) {
+    $defaultValues['username'] = $editedUser['username'];
+}
+if ($isAdminAccount) {
+    $defaultValues['user_type'] = (string) USER_TYPE_ADMIN;
+}
+$initialValues = $defaultValues;
+if ($editedUser) {
+    foreach (array_keys($initialValues) as $field) {
+        if ($field !== 'password') {
+            $initialValues[$field] = (string) $editedUser[$field];
+        }
+    }
+}
 $showExitPopup = false;
 $showSavePopup = false;
 $exitDestination = '';
@@ -59,13 +94,17 @@ if ($requestMethod === 'GET') {
 }
 
 if (isset($_SESSION['user_create_draft'])
-    && $_SESSION['user_create_draft']['user_id'] !== $currentUserId) {
+    && ($_SESSION['user_create_draft']['user_id'] !== $currentUserId
+        || !isset($_SESSION['user_create_draft']['edited_user_id'])
+        || $_SESSION['user_create_draft']['edited_user_id'] !== $editedUserId)) {
     unset($_SESSION['user_create_draft'], $_SESSION['user_create_exit'], $_SESSION['user_create_save_pending']);
 }
 if (!isset($_SESSION['user_create_draft'])) {
     $_SESSION['user_create_draft'] = [
         'user_id' => $currentUserId,
-        'values' => $defaultValues,
+        'edited_user_id' => $editedUserId,
+        'initial_values' => $initialValues,
+        'values' => $initialValues,
         'confirmed' => false,
         'errors' => [],
     ];
@@ -75,6 +114,7 @@ $draft = $_SESSION['user_create_draft'];
 $values = $draft['values'];
 $errors = $draft['errors'];
 $isConfirmation = $draft['confirmed'];
+$initialValues = $draft['initial_values'];
 
 if ($requestMethod !== 'POST') {
     return;
@@ -143,7 +183,7 @@ if ($action === 'confirm_save' || $action === 'cancel_save' || $action === 'save
     }
 
     unset($_SESSION['user_create_save_pending']);
-    $saving = saveUser($db, $currentUserId, $values, $userTypes, $departments);
+    $saving = saveUser($db, $currentUserId, $values, $userTypes, $departments, $editedUserId);
     $errors = $saving['errors'];
     if ($saving['options'] !== null) {
         $newUserTypes = $saving['options']['user_types'];
@@ -162,6 +202,15 @@ if ($action === 'confirm_save' || $action === 'cancel_save' || $action === 'save
 }
 
 if ($action === 'clear') {
+    if ($editedUserId > 0) {
+        $values = $defaultValues;
+        $errors = [];
+        $isConfirmation = false;
+        $_SESSION['user_create_draft']['values'] = $values;
+        $_SESSION['user_create_draft']['errors'] = [];
+        $_SESSION['user_create_draft']['confirmed'] = false;
+        return;
+    }
     unset($_SESSION['user_create_draft']);
     header('Location: ../views/user_create.php', true, 303);
     exit;
@@ -187,6 +236,11 @@ if ($action !== 'validate' && !isset($exitActions[$action])) {
 if ($action === 'validate' || !$isConfirmation) {
     $errors = [];
     foreach (array_keys($values) as $field) {
+        if (($editedUserId > 0 && $field === 'username')
+            || ($isAdminAccount && $field === 'user_type')) {
+            $values[$field] = (string) $editedUser[$field];
+            continue;
+        }
         $values[$field] = '';
         if (isset($_POST[$field])) {
             if (is_string($_POST[$field])) {
@@ -204,13 +258,8 @@ if ($action === 'validate' || !$isConfirmation) {
 
 if ($action === 'validate') {
     $isConfirmation = false;
-    $errors = validateUserFields($values, $newUserTypes, $newUserDepartments, $errors);
-    if (!isset($errors['username'])) {
-        $existingUser = findUserForLogin($db, $values['username']);
-        if ($existingUser) {
-            $errors['username'] = MSG_USERNAME_EXISTS;
-        }
-    }
+    $errors = validateUserFields($values, $newUserTypes, $newUserDepartments, $errors, $editedUserId > 0);
+    $errors = findUserDuplicateErrors($db, $values, $editedUserId, $errors);
     if (!$errors) {
         $isConfirmation = true;
     }
@@ -218,6 +267,8 @@ if ($action === 'validate') {
 
 $_SESSION['user_create_draft'] = [
     'user_id' => $currentUserId,
+    'edited_user_id' => $editedUserId,
+    'initial_values' => $initialValues,
     'values' => $values,
     'confirmed' => $isConfirmation,
     'errors' => $errors,
@@ -225,7 +276,7 @@ $_SESSION['user_create_draft'] = [
 
 if (isset($exitActions[$action])) {
     $exitDestination = $exitActions[$action];
-    $hasChanges = $values !== $defaultValues || !empty($errors);
+    $hasChanges = $values !== $initialValues || !empty($errors);
     if ($hasChanges || $exitDestination === 'logout') {
         $_SESSION['user_create_exit'] = $exitDestination;
         $showExitPopup = true;

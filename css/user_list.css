@@ -51,8 +51,79 @@
 }
 
 .user-row-actions {
+    display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 15px;
+    margin: 0;
+}
+
+.user-row-actions a,
+.user-row-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 100%;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.user-edit {
+    background: #FFC107;
+    color: #1E1E1E;
+}
+
+.user-edit:hover {
+    background: #E0A800;
+}
+
+.user-edit:active {
+    background: #C69500;
+}
+
+.user-cancel {
+    background: #EC221F;
+    color: #FFFFFF;
+}
+
+.user-activate {
+    background: #007EC6;
+    color: #FFFFFF;
+}
+
+.user-status-icon {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.user-cancel:hover {
+    background: #D51D1A;
+}
+
+.user-activate:hover {
+    background: #006EAD;
+}
+
+.user-cancel:active {
+    background: #B81816;
+}
+
+.user-activate:active {
+    background: #005F96;
 }
 
 @media (max-width: 1200px) {

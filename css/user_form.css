@@ -206,14 +206,14 @@
     background: #AA0045;
 }
 
-.user-form-confirm input:disabled,
-.user-form-confirm select:disabled {
+.user-form input:disabled,
+.user-form select:disabled {
     background-color: rgba(204, 204, 204, 0.5);
     color: #000000;
     opacity: 1;
 }
 
-.user-form-confirm select:disabled {
+.user-form select:disabled {
     color: #1E1E1E;
 }
 

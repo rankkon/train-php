@@ -17,6 +17,7 @@ $username = '';
 $password = '';
 $usernameError = false;
 $passwordError = false;
+$loginErrorMessage = MSG_LOGIN_FAILED;
 
 $requestMethod = 'GET';
 if (isset($_SERVER['REQUEST_METHOD'])) {
@@ -44,8 +45,11 @@ if ($requestMethod === 'POST') {
     if (!$usernameError && !$passwordError) {
         $user = findUserForLogin($db, $username);
 
-        if (!$user || (int) $user['status'] !== USER_STATUS_ACTIVE) {
+        if (!$user) {
             $usernameError = true;
+        } elseif ((int) $user['status'] !== USER_STATUS_ACTIVE) {
+            $usernameError = true;
+            $loginErrorMessage = MSG_ACCOUNT_LOCKED;
         } elseif (!hash_equals($user['password_hash'], md5($password))) {
             $passwordError = true;
         } else {

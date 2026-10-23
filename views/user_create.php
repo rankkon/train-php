@@ -7,7 +7,7 @@ require dirname(__DIR__) . '/logic/user_create_logic.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm mới người dùng | Sanshin</title>
+    <title><?= escapeHtml($formTitle) ?> | Sanshin</title>
     <link rel="stylesheet" href="../css/common.css?v=<?= escapeHtml(filemtime(dirname(__DIR__) . '/css/common.css')) ?>">
     <link rel="stylesheet" href="../css/user_form.css?v=<?= escapeHtml(filemtime(dirname(__DIR__) . '/css/user_form.css')) ?>">
 </head>
@@ -20,7 +20,7 @@ require dirname(__DIR__) . '/logic/user_create_logic.php';
     <?php require __DIR__ . '/sidebar.php'; ?>
 
     <main class="user-create">
-        <h1 class="user-form-title">Thêm mới người dùng</h1>
+        <h1 class="user-form-title"><?= escapeHtml($formTitle) ?></h1>
 
         <form method="post" id="user-form" class="user-form<?php if ($isConfirmation): ?> user-form-confirm<?php endif; ?>" novalidate>
             <div class="user-form-fields">
@@ -31,7 +31,7 @@ require dirname(__DIR__) . '/logic/user_create_logic.php';
                 <div class="user-form-field">
                     <label for="username">Tên đăng nhập <span class="required-marker">*</span></label>
                     <input type="text" id="username" name="username" value="<?= escapeHtml($values['username']) ?>" required
-                        <?php if ($isConfirmation): ?>disabled<?php endif; ?>
+                        <?php if ($isConfirmation || $editedUserId > 0): ?>disabled<?php endif; ?>
                         <?php if (isset($errors['username'])): ?>class="user-input-error"<?php endif; ?>>
                     <?php if (isset($errors['username'])): ?>
                         <p class="user-field-error"><?= escapeHtml($errors['username']) ?></p>
@@ -49,8 +49,9 @@ require dirname(__DIR__) . '/logic/user_create_logic.php';
                 </div>
 
                 <div class="user-form-field">
-                    <label for="password">Mật khẩu <span class="required-marker">*</span></label>
-                    <input type="password" id="password" name="password" value="<?= escapeHtml($values['password']) ?>" required
+                    <label for="password">Mật khẩu<?php if ($editedUserId > 0): ?> mới<?php else: ?> <span class="required-marker">*</span><?php endif; ?></label>
+                    <input type="password" id="password" name="password" value="<?= escapeHtml($values['password']) ?>"
+                        <?php if ($editedUserId === 0): ?>required<?php endif; ?>
                         <?php if ($isConfirmation): ?>disabled<?php endif; ?>
                         <?php if (isset($errors['password'])): ?>class="user-input-error"<?php endif; ?>>
                     <?php if (isset($errors['password'])): ?>
@@ -82,7 +83,7 @@ require dirname(__DIR__) . '/logic/user_create_logic.php';
                     <label for="user-type">Loại người dùng <span class="required-marker">*</span></label>
                     <div class="user-select-control">
                         <select id="user-type" name="user_type" required
-                            <?php if ($isConfirmation): ?>disabled<?php endif; ?>
+                            <?php if ($isConfirmation || $isAdminAccount): ?>disabled<?php endif; ?>
                             <?php if (isset($errors['user_type'])): ?>class="user-input-error"<?php endif; ?>>
                             <?php foreach ($newUserTypes as $code => $name): ?>
                                 <option value="<?= escapeHtml($code) ?>" <?php if ($values['user_type'] === (string) $code): ?>selected<?php endif; ?>><?= escapeHtml($name) ?></option>

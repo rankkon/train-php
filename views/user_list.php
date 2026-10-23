@@ -30,10 +30,16 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
             <?php if ($showUserListActions): ?>
                 <div class="user-list-actions">
                     <a href="user_create.php" class="leave-add">Thêm mới</a>
-                    <button type="button" class="leave-add leave-cancel">Xóa nhiều</button>
+                    <form method="post" id="user-bulk-form">
+                        <button name="action" value="open_bulk_lock" class="leave-add leave-cancel">Khóa nhiều</button>
+                    </form>
                 </div>
             <?php endif; ?>
         </div>
+
+        <?php if ($statusError !== ''): ?>
+            <p class="leave-process-error"><?= escapeHtml($statusError) ?></p>
+        <?php endif; ?>
 
         <div class="leave-table-container">
             <table class="leave-table user-table">
@@ -53,17 +59,36 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
                     <?php endif; ?>
                     <?php foreach ($users as $user): ?>
                         <tr>
-                            <td><input type="checkbox"></td>
+                            <td>
+                                <input type="checkbox" name="user_ids[]" value="<?= escapeHtml($user['id']) ?>" form="user-bulk-form"
+                                    <?php if (!$user['show_actions']): ?>disabled<?php endif; ?>
+                                    <?php if ($user['show_actions'] && in_array((int) $user['id'], $selectedUserIds, true)): ?>checked<?php endif; ?>>
+                            </td>
                             <td><?= escapeHtml($user['code']) ?></td>
                             <td><?= escapeHtml($user['full_name']) ?></td>
                             <td><?= escapeHtml($user['created_date']) ?></td>
                             <td><?= escapeHtml($user['status_name']) ?></td>
                             <td>
                                 <?php if ($user['show_actions']): ?>
-                                    <div class="leave-actions user-row-actions">
-                                        <button type="button" class="leave-edit" title="Sửa">✎</button>
-                                        <button type="button" class="leave-cancel" title="Xóa">×</button>
-                                    </div>
+                                    <form method="post" class="user-row-actions">
+                                        <input type="hidden" name="user_id" value="<?= escapeHtml($user['id']) ?>">
+                                        <a href="user_create.php?id=<?= escapeHtml($user['id']) ?>" class="user-edit" title="Sửa">✎</a>
+                                        <?php if ((int) $user['status'] === USER_STATUS_ACTIVE): ?>
+                                            <button type="submit" name="action" value="open_lock" class="user-cancel" title="Khóa">
+                                                <svg class="user-status-icon" viewBox="0 0 24 24">
+                                                    <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                </svg>
+                                            </button>
+                                        <?php else: ?>
+                                            <button type="submit" name="action" value="open_unlock" class="user-activate" title="Mở khóa">
+                                                <svg class="user-status-icon" viewBox="0 0 24 24">
+                                                    <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+                                                    <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                                                </svg>
+                                            </button>
+                                        <?php endif; ?>
+                                    </form>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -74,9 +99,27 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
 
         <?php require __DIR__ . '/pagination.php'; ?>
     </main>
+    <?php if ($statusPopup !== ''): ?>
+        <div class="popup-overlay">
+            <form method="post" class="popup-dialog">
+                <?php if ($statusPopup !== 'bulk_lock'): ?>
+                    <input type="hidden" name="user_id" value="<?= escapeHtml($statusUserId) ?>">
+                <?php endif; ?>
+                <header class="popup-header">
+                    <h2 class="popup-title"><?= escapeHtml(MSG_CONFIRMATION_TITLE) ?></h2>
+                    <button name="action" value="<?= escapeHtml($statusCloseAction) ?>" class="popup-close" title="Đóng"></button>
+                </header>
+                <p class="popup-message"><?= escapeHtml($statusMessage) ?></p>
+                <div class="popup-actions">
+                    <button name="action" value="confirm_<?= escapeHtml($statusPopup) ?>" class="popup-button popup-confirm">Đồng ý</button>
+                    <button name="action" value="<?= escapeHtml($statusCloseAction) ?>" class="popup-button popup-cancel" autofocus>Không</button>
+                </div>
+            </form>
+        </div>
+    <?php endif; ?>
     <script>
         const selectAllUsers = document.getElementById('select-all-users');
-        const userCheckboxes = document.querySelectorAll('.user-table tbody input[type="checkbox"]');
+        const userCheckboxes = document.querySelectorAll('.user-table tbody input[type="checkbox"]:not(:disabled)');
 
         // Chọn hoặc bỏ chọn tất cả người dùng.
         selectAllUsers.addEventListener('change', function () {

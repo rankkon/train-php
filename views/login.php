@@ -62,7 +62,7 @@ require dirname(__DIR__) . '/logic/login_logic.php';
                 </div>
 
                 <?php if ($showLoginError): ?>
-                    <p class="login-error"><?= escapeHtml(MSG_LOGIN_FAILED) ?></p>
+                    <p class="login-error"><?= escapeHtml($loginErrorMessage) ?></p>
                 <?php endif; ?>
             </form>
         </main>

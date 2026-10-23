@@ -51,7 +51,7 @@ function findUserByEmail($db, $email) {
     return $user;
 }
 
-// Lấy quyền, trạng thái tài khoản và khóa dòng khi cần.
+// Lấy thông tin tài khoản và khóa dòng khi cần.
 function findUserById($db, $userId, $forUpdate = false) {
     $sql = readSql('current_user');
     if ($forUpdate) {
@@ -85,6 +85,44 @@ function insertUser($db, $values, $passwordHash, $createdAt) {
         $values['username'], $values['full_name'], $passwordHash, $email, $birthDate,
         $userType, $department, $status, $createdAt
     );
+    $statement->execute();
+    $statement->close();
+}
+
+// Cập nhật tài khoản và chỉ đổi mật khẩu khi có nhập mới.
+function updateUser($db, $userId, $values, $updatedAt) {
+    $email = null;
+    if ($values['email'] !== '') {
+        $email = $values['email'];
+    }
+    $birthDate = null;
+    if ($values['birth_date'] !== '') {
+        $birthDate = $values['birth_date'];
+    }
+    $userType = (int) $values['user_type'];
+    $department = (int) $values['department'];
+    $statement = $db->prepare(readSql('user_update'));
+    $statement->bind_param(
+        'ssssiisi',
+        $values['username'], $values['full_name'], $email, $birthDate,
+        $userType, $department, $updatedAt, $userId
+    );
+    $statement->execute();
+    $statement->close();
+
+    if ($values['password'] !== '') {
+        $passwordHash = md5($values['password']);
+        $statement = $db->prepare(readSql('user_password_update'));
+        $statement->bind_param('si', $passwordHash, $userId);
+        $statement->execute();
+        $statement->close();
+    }
+}
+
+// Cập nhật trạng thái hoạt động của tài khoản.
+function updateUserStatus($db, $userId, $status) {
+    $statement = $db->prepare(readSql('user_status_update'));
+    $statement->bind_param('ii', $status, $userId);
     $statement->execute();
     $statement->close();
 }

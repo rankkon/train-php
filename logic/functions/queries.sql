@@ -18,8 +18,24 @@ INSERT INTO users (
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)
 
 -- name: current_user
-SELECT id, user_type, department, status
+SELECT id, username, full_name, email, birth_date, user_type, department, status
 FROM users
+WHERE id = ?
+
+-- name: user_update
+UPDATE users
+SET username = ?, full_name = ?, email = ?, birth_date = ?,
+    user_type = ?, department = ?, update_at = ?
+WHERE id = ?
+
+-- name: user_password_update
+UPDATE users
+SET password_hash = ?
+WHERE id = ?
+
+-- name: user_status_update
+UPDATE users
+SET status = ?
 WHERE id = ?
 
 -- name: user_search

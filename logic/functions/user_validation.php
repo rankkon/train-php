@@ -3,8 +3,8 @@ require_once __DIR__ . '/const.php';
 require_once __DIR__ . '/message.php';
 require_once __DIR__ . '/helpers.php';
 
-// Lấy loại người dùng và phòng ban được phép chọn khi thêm tài khoản.
-function userCreateOptions($currentUser, $userTypes, $departments) {
+// Lấy loại người dùng và phòng ban được phép chọn khi thêm hoặc sửa tài khoản.
+function userCreateOptions($currentUser, $userTypes, $departments, $editedUser = null) {
     $newUserTypes = [
         USER_TYPE_USER => $userTypes[USER_TYPE_USER],
         USER_TYPE_MANAGER => $userTypes[USER_TYPE_MANAGER],
@@ -14,6 +14,9 @@ function userCreateOptions($currentUser, $userTypes, $departments) {
         $newUserTypes = [USER_TYPE_USER => $userTypes[USER_TYPE_USER]];
         $departmentCode = (int) $currentUser['department'];
         $newUserDepartments = [$departmentCode => $departments[$departmentCode]];
+    }
+    if ($editedUser && (int) $editedUser['user_type'] === USER_TYPE_ADMIN) {
+        $newUserTypes = [USER_TYPE_ADMIN => $userTypes[USER_TYPE_ADMIN]];
     }
     return ['user_types' => $newUserTypes, 'departments' => $newUserDepartments];
 }
@@ -84,7 +87,7 @@ function validateUserBirthDate($birthDate) {
 }
 
 // Kiểm tra từng trường người dùng chưa có lỗi kiểu dữ liệu.
-function validateUserFields($values, $newUserTypes, $newUserDepartments, $errors) {
+function validateUserFields($values, $newUserTypes, $newUserDepartments, $errors, $isEdit = false) {
     foreach ($values as $field => $value) {
         if (isset($errors[$field])) {
             continue;
@@ -95,7 +98,9 @@ function validateUserFields($values, $newUserTypes, $newUserDepartments, $errors
         } elseif ($field === 'full_name') {
             $message = validateUserFullName($value);
         } elseif ($field === 'password') {
-            $message = validateUserPassword($value);
+            if (!$isEdit || $value !== '') {
+                $message = validateUserPassword($value);
+            }
         } elseif ($field === 'email') {
             $message = validateUserEmail($value);
         } elseif ($field === 'birth_date') {
