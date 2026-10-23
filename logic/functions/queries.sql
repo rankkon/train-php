@@ -24,7 +24,7 @@ WHERE id = ?
 
 -- name: user_update
 UPDATE users
-SET username = ?, full_name = ?, email = ?, birth_date = ?,
+SET full_name = ?, email = ?, birth_date = ?,
     user_type = ?, department = ?, update_at = ?
 WHERE id = ?
 
@@ -46,12 +46,14 @@ AND (CASE WHEN id < 1000 THEN LPAD(id, 4, '0') ELSE CAST(id AS CHAR) END LIKE ? 
 SELECT COUNT(*) AS total
 FROM users
 WHERE (? = 3 OR department = ?)
+AND (? = '' OR status = ?)
 {{where}}
 
 -- name: user_list
 SELECT id, full_name, created_at, status, user_type, department
 FROM users
 WHERE (? = 3 OR department = ?)
+AND (? = '' OR status = ?)
 {{where}}
 ORDER BY created_at DESC, id DESC
 LIMIT ? OFFSET ?

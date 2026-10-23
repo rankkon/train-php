@@ -22,12 +22,8 @@ require dirname(__DIR__) . '/logic/user_create_logic.php';
     <main class="user-create">
         <h1 class="user-form-title"><?= escapeHtml($formTitle) ?></h1>
 
-        <form method="post" id="user-form" class="user-form<?php if ($isConfirmation): ?> user-form-confirm<?php endif; ?>" novalidate>
+        <form method="post" id="user-form" class="user-form" novalidate>
             <div class="user-form-fields">
-                <?php if (isset($errors['form'])): ?>
-                    <p class="user-field-error"><?= escapeHtml($errors['form']) ?></p>
-                <?php endif; ?>
-
                 <div class="user-form-field">
                     <label for="username">Tên đăng nhập <span class="required-marker">*</span></label>
                     <input type="text" id="username" name="username" value="<?= escapeHtml($values['username']) ?>" required

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/functions/const.php';
 require_once __DIR__ . '/functions/message.php';
+require_once __DIR__ . '/functions/helpers.php';
 
 session_start();
 
@@ -15,13 +16,11 @@ if (isset($_SERVER['REQUEST_METHOD'])) {
 }
 if ($requestMethod !== 'GET' && $requestMethod !== 'HEAD' && $requestMethod !== 'POST') {
     header('Allow: GET, HEAD, POST');
-    http_response_code(405);
-    exit(MSG_METHOD_NOT_ALLOWED);
+    redirectToError(405);
 }
 
 require_once dirname(__DIR__) . '/index.php';
 require_once __DIR__ . '/functions/queries.php';
-require_once __DIR__ . '/functions/helpers.php';
 require_once __DIR__ . '/functions/catalogs.php';
 require_once __DIR__ . '/functions/leave_validation.php';
 require_once __DIR__ . '/functions/leave_form.php';
@@ -42,17 +41,14 @@ $formTitle = 'Thêm mới đơn';
 if (isset($_GET['id'])) {
     $leaveId = filter_var($_GET['id'], FILTER_VALIDATE_INT);
     if ($leaveId === false || $leaveId < 1) {
-        http_response_code(400);
-        exit(MSG_INVALID_FORM_VALUE);
+        redirectToError(400);
     }
     $leave = findLeaveById($db, $leaveId);
     if (!$leave) {
-        http_response_code(404);
-        exit(MSG_LEAVE_NOT_FOUND);
+        redirectToError(404);
     }
     if (!canEditLeave($leave, $currentUser)) {
-        http_response_code(403);
-        exit(MSG_LEAVE_EDIT_FORBIDDEN);
+        redirectToError(403);
     }
     $formTitle = 'Sửa đơn';
 }
@@ -84,9 +80,10 @@ $showExitPopup = false;
 $exitDestination = '';
 $exitMessage = MSG_CONFIRM_EXIT;
 
-if ($requestMethod === 'GET') {
+if ($requestMethod === 'GET' && empty($_SESSION['leave_create_resume'])) {
     clearLeaveDraft();
 }
+unset($_SESSION['leave_create_resume']);
 
 $draft = null;
 if (isset($_SESSION['leave_create_draft'])) {
@@ -103,7 +100,7 @@ if ($draft && (int) $draft['user_id'] === $currentUserId
     clearLeaveDraft();
     $draft = null;
     if ($leave) {
-        foreach ($values as $field => $value) {
+        foreach (array_keys($values) as $field) {
             $values[$field] = (string) $leave[$field];
         }
         $selectedApproverId = $defaultValues['approver_id'];
@@ -236,9 +233,7 @@ if ($action === 'confirm_exit' || $action === 'cancel_exit') {
     $isConfirmation = !empty($draft['confirmed']);
     if (!isset($_SESSION['leave_create_exit'])
         || ($action === 'confirm_exit' && $_SESSION['leave_create_exit'] === 'logout')) {
-        http_response_code(400);
-        $errors['form'] = MSG_INVALID_ACTION;
-        return;
+        redirectToError(400);
     }
     $exitDestination = $_SESSION['leave_create_exit'];
     unset($_SESSION['leave_create_exit']);
@@ -317,16 +312,11 @@ if ($action === 'validate') {
 }
 
 if ($action !== 'confirm_save' && $action !== 'cancel_save' && $action !== 'save') {
-    http_response_code(400);
-    $errors['form'] = MSG_INVALID_ACTION;
-    return;
+    redirectToError(400);
 }
 
 if (!$draft || empty($draft['confirmed'])) {
-    http_response_code(400);
-    $errors['form'] = MSG_CONFIRMATION_INVALID;
-    resetLeaveConfirmation();
-    return;
+    redirectToError(400);
 }
 
 if ($action === 'cancel_save') {
@@ -343,10 +333,7 @@ if ($action === 'confirm_save') {
 }
 
 if (empty($_SESSION['leave_create_save_pending'])) {
-    http_response_code(400);
-    $errors['form'] = MSG_SAVE_CONFIRMATION_REQUIRED;
-    resetLeaveConfirmation();
-    return;
+    redirectToError(400);
 }
 
 $errors = saveLeave($db, $currentUserId, $values, $attachment, $leaveTypes, $maxAttachmentSize, $leaveId);

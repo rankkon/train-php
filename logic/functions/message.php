@@ -1,16 +1,10 @@
 <?php
 
-const MSG_DATABASE_CONNECTION_FAILED = '※Không thể kết nối cơ sở dữ liệu.';
-const MSG_METHOD_NOT_ALLOWED = '※Phương thức không được hỗ trợ.';
-const MSG_LIST_READ_ONLY = '※Trang danh sách hiện chỉ hỗ trợ xem và tìm kiếm.';
+const MSG_PAGE_ERROR = 'Có lỗi xảy ra';
 const MSG_LOGIN_FAILED = '※Tên đăng nhập hoặc mật khẩu lỗi. Vui lòng thử lại！';
 const MSG_ACCOUNT_LOCKED = '※Tài khoản của bạn đã bị khóa.';
-const MSG_ACCOUNT_INACTIVE = '※Tài khoản không còn hoạt động. Vui lòng đăng nhập lại.';
 const MSG_INVALID_FORM_VALUE = '※Giá trị gửi lên không hợp lệ.';
-const MSG_INVALID_ACTION = '※Thao tác không hợp lệ.';
 const MSG_SQL_NOT_FOUND = '※Không tìm thấy câu SQL: %s';
-const MSG_LEAVE_NOT_FOUND = '※Không tìm thấy đơn cần sửa.';
-const MSG_LEAVE_EDIT_FORBIDDEN = '※Chỉ chủ đơn được sửa khi đơn còn ở trạng thái Đơn mới.';
 
 const MSG_USERNAME_REQUIRED = '※Vui lòng nhập tên đăng nhập.';
 const MSG_USERNAME_FORMAT = '※Tên đăng nhập chỉ được chứa chữ không dấu A-Z, a-z và số 0-9.';
@@ -26,17 +20,9 @@ const MSG_USER_EMAIL_TOO_LONG = '※Email không được quá %d ký tự.';
 const MSG_USER_EMAIL_EXISTS = '※Email đã được sử dụng.';
 const MSG_USER_TYPE_INVALID = '※Vui lòng chọn loại người dùng trong danh sách.';
 const MSG_USER_DEPARTMENT_INVALID = '※Vui lòng chọn phòng ban trong danh sách.';
-const MSG_USER_CONFIRMATION_INVALID = '※Vui lòng nhấn Tiếp theo để kiểm tra thông tin người dùng.';
-const MSG_USER_SAVE_CONFIRMATION_REQUIRED = '※Vui lòng nhấn Lưu lại và xác nhận trước khi lưu người dùng.';
-const MSG_USER_SAVE_FAILED = '※Không thể lưu người dùng. Dữ liệu vẫn được giữ để bạn thử lại.';
-const MSG_USER_NOT_FOUND = '※Không tìm thấy người dùng cần sửa.';
-const MSG_USER_EDIT_FORBIDDEN = '※Bạn không có quyền sửa người dùng này.';
 const MSG_CONFIRM_USER_LOCK = 'Bạn có chắc chắn muốn khóa tài khoản này?';
 const MSG_CONFIRM_USERS_LOCK = 'Bạn có chắc chắn muốn khóa các tài khoản đã chọn?';
 const MSG_CONFIRM_USER_UNLOCK = 'Bạn có chắc chắn muốn mở khóa tài khoản này?';
-const MSG_USER_STATUS_NOT_FOUND = '※Không tìm thấy người dùng cần thay đổi trạng thái.';
-const MSG_USER_STATUS_FORBIDDEN = '※Bạn không có quyền thay đổi trạng thái người dùng này.';
-const MSG_USER_STATUS_FAILED = '※Không thể cập nhật trạng thái người dùng. Vui lòng thử lại.';
 
 const MSG_LEAVE_TITLE_ENCODING = '※Tiêu đề phải là văn bản hợp lệ.';
 const MSG_LEAVE_TITLE_REQUIRED = '※Vui lòng nhập tiêu đề.';
@@ -67,22 +53,16 @@ const MSG_ATTACHMENT_PDF_INVALID = '※Tệp PDF không hợp lệ.';
 const MSG_ATTACHMENT_HINT = '※JPG/JPEG, PNG, GIF, WebP, BMP hoặc PDF. Tối đa %d MB.';
 
 const MSG_POST_DATA_UNREADABLE = '※Không đọc được dữ liệu gửi lên. Vui lòng kiểm tra tệp đính kèm, tối đa %d MB.';
-const MSG_CONFIRMATION_INVALID = '※Vui lòng nhấn Tiếp theo để kiểm tra đơn trước khi lưu.';
-const MSG_SAVE_CONFIRMATION_REQUIRED = '※Vui lòng nhấn Lưu lại và xác nhận trước khi lưu đơn.';
 const MSG_CONFIRMATION_TITLE = 'Thông báo';
 const MSG_CONFIRM_LOGOUT = 'Bạn có chắc chắn muốn đăng xuất?';
 const MSG_CONFIRM_EXIT = 'Bạn có chắc chắn hủy các thay đổi và thoát khỏi trang?';
 const MSG_CONFIRM_LOGOUT_WITH_CHANGES = 'Bạn có chắc chắn hủy các thay đổi và đăng xuất?';
 const MSG_CONFIRM_SAVE = 'Bạn có chắc chắn lưu lại thay đổi ?';
-const MSG_SAVE_FAILED = '※Không thể lưu đơn. Dữ liệu và tệp vẫn được giữ để bạn thử lại.';
 
 const MSG_CONFIRM_APPROVE = 'Bạn có chắc chắn duyệt đơn này?';
-const MSG_LEAVE_PROCESS_NOT_FOUND = '※Không tìm thấy đơn cần xử lý.';
-const MSG_LEAVE_PROCESS_FORBIDDEN = '※Bạn không có quyền xử lý đơn này hoặc đơn không còn ở trạng thái Đơn mới.';
 const MSG_CANCEL_REASON_REQUIRED = '※Vui lòng nhập lý do hủy đơn.';
 const MSG_CANCEL_REASON_ENCODING = '※Lý do hủy phải là văn bản hợp lệ.';
 const MSG_CANCEL_REASON_TOO_LONG = '※Lý do hủy vượt giới hạn lưu trữ.';
-const MSG_LEAVE_PROCESS_FAILED = '※Không thể xử lý đơn. Vui lòng thử lại.';
 const MSG_LEAVE_PROCESS_FAILED_LOG = '※Duyệt/hủy đơn thất bại: %s';
 
 const MSG_NO_USERS_FOUND = 'Không có người dùng phù hợp.';

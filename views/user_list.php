@@ -25,7 +25,13 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
             <form method="get" class="leave-search user-search">
                 <label for="user-search">Mã/Tên user</label>
                 <input type="text" id="user-search" name="q" value="<?= escapeHtml($search) ?>">
-                <button class="leave-search-button">Tìm kiếm</button>
+                <button type="submit" name="status" value="<?= escapeHtml($userStatusFilter) ?>" class="leave-search-button">Tìm kiếm</button>
+                <div class="user-status-filters">
+                    <button type="submit" name="status" value="<?= escapeHtml($activeStatusValue) ?>"
+                        class="user-status-filter<?php if ($userStatusFilter === (string) USER_STATUS_ACTIVE): ?> user-status-filter-selected<?php endif; ?>">Đang hoạt động</button>
+                    <button type="submit" name="status" value="<?= escapeHtml($lockedStatusValue) ?>"
+                        class="user-status-filter<?php if ($userStatusFilter === (string) USER_STATUS_LOCKED): ?> user-status-filter-selected<?php endif; ?>">Đã khóa</button>
+                </div>
             </form>
             <?php if ($showUserListActions): ?>
                 <div class="user-list-actions">
@@ -36,10 +42,6 @@ require dirname(__DIR__) . '/logic/user_list_logic.php';
                 </div>
             <?php endif; ?>
         </div>
-
-        <?php if ($statusError !== ''): ?>
-            <p class="leave-process-error"><?= escapeHtml($statusError) ?></p>
-        <?php endif; ?>
 
         <div class="leave-table-container">
             <table class="leave-table user-table">

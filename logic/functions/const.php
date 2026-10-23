@@ -23,6 +23,7 @@ const LEAVE_TYPE_WORK_HOURS = 3;
 const LEAVE_TYPE_TRAVEL_EXPENSE = 4;
 
 const APP_TIMEZONE = 'Asia/Bangkok';
+const APP_BASE_PATH = '/train-php';
 const APP_DATE_FORMAT = 'Y-m-d';
 const APP_DATETIME_FORMAT = 'Y-m-d H:i:s';
 const LIST_PER_PAGE = 15;

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/functions/const.php';
 require_once __DIR__ . '/functions/message.php';
+require_once __DIR__ . '/functions/helpers.php';
 
 session_start();
 
@@ -15,13 +16,11 @@ if (isset($_SERVER['REQUEST_METHOD'])) {
 }
 if ($requestMethod !== 'GET' && $requestMethod !== 'HEAD' && $requestMethod !== 'POST') {
     header('Allow: GET, HEAD, POST');
-    http_response_code(405);
-    exit(MSG_METHOD_NOT_ALLOWED);
+    redirectToError(405);
 }
 
 require_once dirname(__DIR__) . '/index.php';
 require_once __DIR__ . '/functions/queries.php';
-require_once __DIR__ . '/functions/helpers.php';
 require_once __DIR__ . '/functions/catalogs.php';
 require_once __DIR__ . '/functions/user_validation.php';
 require_once __DIR__ . '/functions/user_save.php';
@@ -41,19 +40,19 @@ $formTitle = 'Thêm mới người dùng';
 if (isset($_GET['id'])) {
     $editedUserId = filter_var($_GET['id'], FILTER_VALIDATE_INT);
     if ($editedUserId === false || $editedUserId < 1) {
-        http_response_code(400);
-        exit(MSG_INVALID_FORM_VALUE);
+        redirectToError(400);
     }
     $editedUser = findUserById($db, $editedUserId);
     if (!$editedUser) {
-        http_response_code(404);
-        exit(MSG_USER_NOT_FOUND);
+        redirectToError(404);
     }
     if (!canManageUser($editedUser, $currentUser)) {
-        http_response_code(403);
-        exit(MSG_USER_EDIT_FORBIDDEN);
+        redirectToError(403);
     }
     $formTitle = 'Sửa người dùng';
+} elseif ((int) $currentUser['user_type'] !== USER_TYPE_MANAGER
+    && (int) $currentUser['user_type'] !== USER_TYPE_ADMIN) {
+    redirectToError(403);
 }
 $isAdminAccount = $editedUser && (int) $editedUser['user_type'] === USER_TYPE_ADMIN;
 $options = userCreateOptions($currentUser, $userTypes, $departments, $editedUser);
@@ -89,9 +88,10 @@ $showSavePopup = false;
 $exitDestination = '';
 $exitMessage = MSG_CONFIRM_EXIT;
 
-if ($requestMethod === 'GET') {
+if ($requestMethod === 'GET' && empty($_SESSION['user_create_resume'])) {
     unset($_SESSION['user_create_draft'], $_SESSION['user_create_exit'], $_SESSION['user_create_save_pending']);
 }
+unset($_SESSION['user_create_resume']);
 
 if (isset($_SESSION['user_create_draft'])
     && ($_SESSION['user_create_draft']['user_id'] !== $currentUserId
@@ -123,10 +123,7 @@ if ($requestMethod !== 'POST') {
 $action = 'validate';
 if (isset($_POST['action'])) {
     if (!is_string($_POST['action'])) {
-        unset($_SESSION['user_create_save_pending']);
-        http_response_code(400);
-        $errors['form'] = MSG_INVALID_ACTION;
-        return;
+        redirectToError(400);
     }
     $action = $_POST['action'];
 }
@@ -145,9 +142,7 @@ $exitActions = [
 if ($action === 'confirm_exit' || $action === 'cancel_exit') {
     if (!isset($_SESSION['user_create_exit'])
         || ($action === 'confirm_exit' && $_SESSION['user_create_exit'] === 'logout')) {
-        http_response_code(400);
-        $errors['form'] = MSG_INVALID_ACTION;
-        return;
+        redirectToError(400);
     }
     $exitDestination = $_SESSION['user_create_exit'];
     unset($_SESSION['user_create_exit']);
@@ -163,10 +158,7 @@ unset($_SESSION['user_create_exit']);
 
 if ($action === 'confirm_save' || $action === 'cancel_save' || $action === 'save') {
     if (!$isConfirmation) {
-        unset($_SESSION['user_create_save_pending']);
-        http_response_code(400);
-        $errors['form'] = MSG_USER_CONFIRMATION_INVALID;
-        return;
+        redirectToError(400);
     }
     if ($action === 'cancel_save') {
         return;
@@ -177,18 +169,14 @@ if ($action === 'confirm_save' || $action === 'cancel_save' || $action === 'save
         return;
     }
     if (!isset($_SESSION['user_create_save_pending']) || $_SESSION['user_create_save_pending'] !== true) {
-        http_response_code(400);
-        $errors['form'] = MSG_USER_SAVE_CONFIRMATION_REQUIRED;
-        return;
+        redirectToError(400);
     }
 
     unset($_SESSION['user_create_save_pending']);
     $saving = saveUser($db, $currentUserId, $values, $userTypes, $departments, $editedUserId);
     $errors = $saving['errors'];
-    if ($saving['options'] !== null) {
-        $newUserTypes = $saving['options']['user_types'];
-        $newUserDepartments = $saving['options']['departments'];
-    }
+    $newUserTypes = $saving['options']['user_types'];
+    $newUserDepartments = $saving['options']['departments'];
     if ($errors) {
         $isConfirmation = false;
         $_SESSION['user_create_draft']['confirmed'] = false;
@@ -218,9 +206,7 @@ if ($action === 'clear') {
 
 if ($action === 'back') {
     if (!$isConfirmation) {
-        http_response_code(400);
-        $errors['form'] = MSG_USER_CONFIRMATION_INVALID;
-        return;
+        redirectToError(400);
     }
     $isConfirmation = false;
     $_SESSION['user_create_draft']['confirmed'] = false;
@@ -228,9 +214,7 @@ if ($action === 'back') {
 }
 
 if ($action !== 'validate' && !isset($exitActions[$action])) {
-    http_response_code(400);
-    $errors['form'] = MSG_INVALID_ACTION;
-    return;
+    redirectToError(400);
 }
 
 if ($action === 'validate' || !$isConfirmation) {

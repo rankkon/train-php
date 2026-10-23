@@ -12,7 +12,7 @@ function processLeave($db, $userId, $leaveId, $action, $cancelReason) {
         $leave = findLeaveById($db, $leaveId, true);
         if (!$leave) {
             $db->rollback();
-            return ['error' => MSG_LEAVE_PROCESS_NOT_FOUND, 'retry' => false];
+            redirectToError(404);
         }
 
         $users = lockLeaveUsers($db, $userId, (int) $leave['user_id'], (int) $leave['approver_id']);
@@ -26,34 +26,29 @@ function processLeave($db, $userId, $leaveId, $action, $cancelReason) {
                 $owner = $user;
             }
         }
-        if (!$currentUser) {
+        if (!$currentUser || (int) $currentUser['status'] !== USER_STATUS_ACTIVE) {
             $db->rollback();
-            return ['error' => MSG_ACCOUNT_INACTIVE, 'retry' => false];
+            redirectToLogin();
         }
         if (!$owner) {
             $db->rollback();
-            return ['error' => MSG_LEAVE_PROCESS_NOT_FOUND, 'retry' => false];
+            redirectToError(404);
         }
         $leave['owner_type'] = $owner['user_type'];
         $leave['owner_department'] = $owner['department'];
         if (!canProcessLeave($leave, $currentUser)) {
             $db->rollback();
-            return ['error' => MSG_LEAVE_PROCESS_FORBIDDEN, 'retry' => false];
+            redirectToError(409);
         }
 
         date_default_timezone_set(APP_TIMEZONE);
         $processedAt = date(APP_DATETIME_FORMAT);
         if ($action === 'approve') {
-            $affectedRows = approveLeave($db, $leaveId, $processedAt, displayDate($processedAt));
+            approveLeave($db, $leaveId, $processedAt, displayDate($processedAt));
         } else {
-            $affectedRows = cancelLeave($db, $leaveId, $processedAt, $cancelReason);
-        }
-        if ($affectedRows !== 1) {
-            $db->rollback();
-            return ['error' => MSG_LEAVE_PROCESS_FORBIDDEN, 'retry' => false];
+            cancelLeave($db, $leaveId, $processedAt, $cancelReason);
         }
         $db->commit();
-        return ['error' => '', 'retry' => false];
     } catch (Throwable $error) {
         try {
             $db->rollback();
@@ -61,7 +56,7 @@ function processLeave($db, $userId, $leaveId, $action, $cancelReason) {
             error_log(MSG_ROLLBACK_FAILED);
         }
         error_log(sprintf(MSG_LEAVE_PROCESS_FAILED_LOG, $error->getMessage()));
-        return ['error' => MSG_LEAVE_PROCESS_FAILED, 'retry' => true];
+        redirectToError();
     }
 }
 
@@ -73,9 +68,7 @@ function handleLeaveProcessingPost($db, $currentUser) {
         $action = $_POST['action'];
     }
     if (!in_array($action, ['open_approve', 'open_cancel', 'close_popup', 'confirm_approve', 'confirm_cancel'], true)) {
-        http_response_code(400);
-        $result['errors']['general'] = MSG_INVALID_ACTION;
-        return $result;
+        redirectToError(400);
     }
 
     if ($action === 'close_popup') {
@@ -87,31 +80,23 @@ function handleLeaveProcessingPost($db, $currentUser) {
         $leaveId = filter_var($_POST['leave_id'], FILTER_VALIDATE_INT);
     }
     if ($leaveId === false || $leaveId < 1) {
-        http_response_code(400);
-        $result['errors']['general'] = MSG_INVALID_FORM_VALUE;
-        return $result;
+        redirectToError(400);
     }
     $result['leave_id'] = $leaveId;
 
     if ($action === 'open_approve' || $action === 'open_cancel') {
         $leave = findLeaveById($db, $leaveId);
         if (!$leave) {
-            http_response_code(404);
-            $result['errors']['general'] = MSG_LEAVE_PROCESS_NOT_FOUND;
-            return $result;
+            redirectToError(404);
         }
         $owner = findUserById($db, (int) $leave['user_id']);
         if (!$owner) {
-            http_response_code(404);
-            $result['errors']['general'] = MSG_LEAVE_PROCESS_NOT_FOUND;
-            return $result;
+            redirectToError(404);
         }
         $leave['owner_type'] = $owner['user_type'];
         $leave['owner_department'] = $owner['department'];
         if (!canProcessLeave($leave, $currentUser)) {
-            http_response_code(403);
-            $result['errors']['general'] = MSG_LEAVE_PROCESS_FORBIDDEN;
-            return $result;
+            redirectToError(403);
         }
 
         $result['popup'] = 'approve';
@@ -140,18 +125,8 @@ function handleLeaveProcessingPost($db, $currentUser) {
         }
     }
 
-    $processed = processLeave($db, (int) $currentUser['id'], $leaveId, $result['popup'], $result['reason']);
-    if ($processed['error'] !== '') {
-        $result['errors']['general'] = $processed['error'];
-        http_response_code(409);
-        if ($processed['retry']) {
-            http_response_code(500);
-        }
-    }
-
-    if (!$processed['retry']) {
-        $result['popup'] = '';
-        $result['leave_id'] = 0;
-    }
+    processLeave($db, (int) $currentUser['id'], $leaveId, $result['popup'], $result['reason']);
+    $result['popup'] = '';
+    $result['leave_id'] = 0;
     return $result;
 }

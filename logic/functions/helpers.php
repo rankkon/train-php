@@ -1,6 +1,39 @@
 <?php
 require_once __DIR__ . '/const.php';
 
+// Chuyển đến trang lỗi chung với mã HTTP tương ứng.
+function redirectToError($statusCode = 500) {
+    if (isset($_SESSION['user_create_draft'])) {
+        $_SESSION['user_create_resume'] = true;
+        $_SESSION['user_create_draft']['confirmed'] = false;
+        unset($_SESSION['user_create_save_pending']);
+    }
+    if (isset($_SESSION['leave_create_draft'])) {
+        $_SESSION['leave_create_resume'] = true;
+        $_SESSION['leave_create_draft']['confirmed'] = false;
+        unset($_SESSION['leave_create_save_pending']);
+    }
+    $errorUrl = '../views/error.php?code=' . $statusCode;
+    if (isset($_SERVER['SCRIPT_NAME']) && basename($_SERVER['SCRIPT_NAME']) === 'index.php') {
+        $errorUrl = 'views/error.php?code=' . $statusCode;
+    }
+    header('Location: ' . $errorUrl, true, 303);
+    exit;
+}
+
+// Đưa tài khoản không còn đăng nhập hợp lệ về trang login.
+function redirectToLogin() {
+    unset($_SESSION['user_id']);
+    header('Location: ../views/login.php', true, 303);
+    exit;
+}
+
+// Ghi lỗi ngoài dự kiến và chuyển đến trang lỗi chung.
+function handleUnexpectedError($error) {
+    error_log($error->getMessage());
+    redirectToError();
+}
+
 // Escape dữ liệu trước khi hiển thị HTML.
 function escapeHtml($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
@@ -61,14 +94,17 @@ function canManageUser($targetUser, $currentUser) {
     return true;
 }
 
-// Tạo link phân trang kèm từ khóa.
-function pageUrl($pageNumber, $search, $pageFile = 'leave_list.php') {
+// Tạo link phân trang kèm từ khóa và bộ lọc trạng thái.
+function pageUrl($pageNumber, $search, $pageFile = 'leave_list.php', $userStatusFilter = '') {
     $parameters = ['q' => $search, 'page' => $pageNumber];
+    if ($userStatusFilter !== '') {
+        $parameters['status'] = $userStatusFilter;
+    }
     return $pageFile . '?' . http_build_query($parameters);
 }
 
 // Tạo danh sách các link phân trang.
-function buildPagination($page, $totalPages, $search, $pageFile) {
+function buildPagination($page, $totalPages, $search, $pageFile, $userStatusFilter = '') {
     $pageNumbers = [1];
     $startPage = max(2, $page - PAGINATION_NEARBY_PAGES);
     $endPage = min($totalPages - 1, $page + PAGINATION_NEARBY_PAGES);
@@ -84,7 +120,7 @@ function buildPagination($page, $totalPages, $search, $pageFile) {
     foreach ($pageNumbers as $pageNumber) {
         $pagination[] = [
             'number' => $pageNumber,
-            'url' => pageUrl($pageNumber, $search, $pageFile),
+            'url' => pageUrl($pageNumber, $search, $pageFile, $userStatusFilter),
             'current' => $pageNumber === $page,
             'show_gap' => $pageNumber > $previousPage + 1,
         ];

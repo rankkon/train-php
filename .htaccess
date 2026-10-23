@@ -1,0 +1,6 @@
+ErrorDocument 400 /train-php/views/error.php?code=400
+ErrorDocument 403 /train-php/views/error.php?code=403
+ErrorDocument 404 /train-php/views/error.php?code=404
+ErrorDocument 405 /train-php/views/error.php?code=405
+ErrorDocument 409 /train-php/views/error.php?code=409
+ErrorDocument 500 /train-php/views/error.php?code=500

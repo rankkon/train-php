@@ -103,8 +103,8 @@ function updateUser($db, $userId, $values, $updatedAt) {
     $department = (int) $values['department'];
     $statement = $db->prepare(readSql('user_update'));
     $statement->bind_param(
-        'ssssiisi',
-        $values['username'], $values['full_name'], $email, $birthDate,
+        'sssiisi',
+        $values['full_name'], $email, $birthDate,
         $userType, $department, $updatedAt, $userId
     );
     $statement->execute();
@@ -135,8 +135,8 @@ function searchPattern($search) {
     return '%' . $pattern . '%';
 }
 
-// Đếm người dùng theo phạm vi phòng ban và từ khóa.
-function countUsers($db, $currentUser, $search) {
+// Đếm người dùng theo phòng ban, từ khóa và trạng thái.
+function countUsers($db, $currentUser, $search, $userStatusFilter = '') {
     $where = '';
     if ($search !== '') {
         $where = readSql('user_search');
@@ -147,9 +147,9 @@ function countUsers($db, $currentUser, $search) {
     $department = (int) $currentUser['department'];
     if ($search !== '') {
         $pattern = searchPattern($search);
-        $statement->bind_param('iiss', $userType, $department, $pattern, $pattern);
+        $statement->bind_param('iissss', $userType, $department, $userStatusFilter, $userStatusFilter, $pattern, $pattern);
     } else {
-        $statement->bind_param('ii', $userType, $department);
+        $statement->bind_param('iiss', $userType, $department, $userStatusFilter, $userStatusFilter);
     }
     $statement->execute();
     $result = $statement->get_result();
@@ -158,8 +158,8 @@ function countUsers($db, $currentUser, $search) {
     return (int) $row['total'];
 }
 
-// Lấy người dùng theo phạm vi phòng ban, từ khóa và trang.
-function findUsers($db, $currentUser, $search, $perPage, $offset) {
+// Lấy người dùng theo phòng ban, từ khóa, trạng thái và trang.
+function findUsers($db, $currentUser, $search, $perPage, $offset, $userStatusFilter = '') {
     $where = '';
     if ($search !== '') {
         $where = readSql('user_search');
@@ -170,9 +170,9 @@ function findUsers($db, $currentUser, $search, $perPage, $offset) {
     $department = (int) $currentUser['department'];
     if ($search !== '') {
         $pattern = searchPattern($search);
-        $statement->bind_param('iissii', $userType, $department, $pattern, $pattern, $perPage, $offset);
+        $statement->bind_param('iissssii', $userType, $department, $userStatusFilter, $userStatusFilter, $pattern, $pattern, $perPage, $offset);
     } else {
-        $statement->bind_param('iiii', $userType, $department, $perPage, $offset);
+        $statement->bind_param('iissii', $userType, $department, $userStatusFilter, $userStatusFilter, $perPage, $offset);
     }
     $statement->execute();
     $result = $statement->get_result();
@@ -270,9 +270,7 @@ function approveLeave($db, $leaveId, $approvedTime, $approvedDate) {
     $statement = $db->prepare(readSql('leave_approve'));
     $statement->bind_param('ssi', $approvedTime, $approvedDate, $leaveId);
     $statement->execute();
-    $affectedRows = $statement->affected_rows;
     $statement->close();
-    return $affectedRows;
 }
 
 // Cập nhật trạng thái, thời gian và lý do hủy.
@@ -280,9 +278,7 @@ function cancelLeave($db, $leaveId, $cancelledTime, $cancelReason) {
     $statement = $db->prepare(readSql('leave_cancel'));
     $statement->bind_param('ssi', $cancelledTime, $cancelReason, $leaveId);
     $statement->execute();
-    $affectedRows = $statement->affected_rows;
     $statement->close();
-    return $affectedRows;
 }
 
 // Đếm số đơn đang dùng một file.

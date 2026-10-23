@@ -254,8 +254,7 @@
 }
 
 .leave-management-table .leave-actions button,
-.leave-management-table .leave-actions a,
-.user-row-actions button {
+.leave-management-table .leave-actions a {
     width: 28px;
     height: 28px;
     padding: 0;
@@ -341,15 +340,6 @@
     font-size: 14px;
     line-height: 1.5;
     overflow-wrap: anywhere;
-}
-
-.leave-list > .leave-process-error {
-    flex: none;
-    margin: 0;
-}
-
-.leave-popup-error {
-    margin: 12px 29.6px 0;
 }
 
 .leave-cancel-reason.leave-field-error {

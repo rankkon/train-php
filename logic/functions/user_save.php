@@ -24,14 +24,17 @@ function findUserDuplicateErrors($db, $values, $editedUserId = 0, $errors = []) 
 
 // Thêm hoặc sửa người dùng sau khi khóa và kiểm tra quyền trong transaction.
 function saveUser($db, $currentUserId, $values, $userTypes, $departments, $editedUserId = 0) {
-    $result = ['errors' => [], 'options' => null];
     try {
         $db->begin_transaction();
         $currentUser = findUserById($db, $currentUserId, true);
         if (!$currentUser || (int) $currentUser['status'] !== USER_STATUS_ACTIVE) {
             $db->rollback();
-            $result['errors'] = ['form' => MSG_ACCOUNT_INACTIVE];
-            return $result;
+            redirectToLogin();
+        }
+        if ($editedUserId === 0 && (int) $currentUser['user_type'] !== USER_TYPE_MANAGER
+            && (int) $currentUser['user_type'] !== USER_TYPE_ADMIN) {
+            $db->rollback();
+            redirectToError(403);
         }
 
         $editedUser = null;
@@ -42,13 +45,11 @@ function saveUser($db, $currentUserId, $values, $userTypes, $departments, $edite
             }
             if (!$editedUser) {
                 $db->rollback();
-                $result['errors'] = ['form' => MSG_USER_NOT_FOUND];
-                return $result;
+                redirectToError(404);
             }
             if (!canManageUser($editedUser, $currentUser)) {
                 $db->rollback();
-                $result['errors'] = ['form' => MSG_USER_EDIT_FORBIDDEN];
-                return $result;
+                redirectToError(403);
             }
             $values['username'] = $editedUser['username'];
             if ((int) $editedUser['user_type'] === USER_TYPE_ADMIN) {
@@ -56,7 +57,7 @@ function saveUser($db, $currentUserId, $values, $userTypes, $departments, $edite
             }
         }
 
-        $result['options'] = userCreateOptions($currentUser, $userTypes, $departments, $editedUser);
+        $result = ['options' => userCreateOptions($currentUser, $userTypes, $departments, $editedUser)];
         $result['errors'] = validateUserFields(
             $values, $result['options']['user_types'], $result['options']['departments'], [], $editedUserId > 0
         );
@@ -82,13 +83,13 @@ function saveUser($db, $currentUserId, $values, $userTypes, $departments, $edite
         $db->commit();
         return $result;
     } catch (Throwable $error) {
-        $result['errors'] = ['form' => MSG_USER_SAVE_FAILED];
         try {
             $db->rollback();
         } catch (Throwable $recoveryError) {
-            return $result;
+            error_log(MSG_ROLLBACK_FAILED);
         }
-        return $result;
+        error_log($error->getMessage());
+        redirectToError();
     }
 }
 
@@ -99,7 +100,7 @@ function changeUsersStatus($db, $currentUserId, $targetUserIds, $status) {
         $currentUser = findUserById($db, $currentUserId, true);
         if (!$currentUser || (int) $currentUser['status'] !== USER_STATUS_ACTIVE) {
             $db->rollback();
-            return MSG_ACCOUNT_INACTIVE;
+            redirectToLogin();
         }
 
         foreach ($targetUserIds as $targetUserId) {
@@ -109,23 +110,23 @@ function changeUsersStatus($db, $currentUserId, $targetUserIds, $status) {
             }
             if (!$targetUser) {
                 $db->rollback();
-                return MSG_USER_STATUS_NOT_FOUND;
+                redirectToError(404);
             }
             if (!canManageUser($targetUser, $currentUser)) {
                 $db->rollback();
-                return MSG_USER_STATUS_FORBIDDEN;
+                redirectToError(403);
             }
             updateUserStatus($db, $targetUserId, $status);
         }
 
         $db->commit();
-        return '';
     } catch (Throwable $error) {
         try {
             $db->rollback();
         } catch (Throwable $rollbackError) {
-            return MSG_USER_STATUS_FAILED;
+            error_log(MSG_ROLLBACK_FAILED);
         }
-        return MSG_USER_STATUS_FAILED;
+        error_log($error->getMessage());
+        redirectToError();
     }
 }

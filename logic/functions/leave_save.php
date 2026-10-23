@@ -35,7 +35,7 @@ function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $maxAttachme
             $leave = findLeaveById($db, $leaveId, true);
             if (!$leave) {
                 $db->rollback();
-                return ['form' => MSG_LEAVE_NOT_FOUND];
+                redirectToError(404);
             }
             $ownerId = (int) $leave['user_id'];
         }
@@ -49,11 +49,11 @@ function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $maxAttachme
         }
         if (!$currentUser || (int) $currentUser['status'] !== USER_STATUS_ACTIVE) {
             $db->rollback();
-            return ['form' => MSG_ACCOUNT_INACTIVE];
+            redirectToLogin();
         }
         if ($leave && !canEditLeave($leave, $currentUser)) {
             $db->rollback();
-            return ['form' => MSG_LEAVE_EDIT_FORBIDDEN];
+            redirectToError(403);
         }
 
         date_default_timezone_set(APP_TIMEZONE);
@@ -118,7 +118,7 @@ function saveLeave($db, $userId, $values, $attachment, $leaveTypes, $maxAttachme
             error_log(MSG_FAILED_ATTACHMENT_DELETE);
         }
         error_log(sprintf(MSG_SAVE_FAILED_LOG, $error->getMessage()));
-        return ['form' => MSG_SAVE_FAILED];
+        redirectToError();
     }
 
     if ($leave && $leave['attachment_path'] !== $attachmentPath) {

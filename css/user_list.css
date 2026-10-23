@@ -1,5 +1,55 @@
 .user-search {
-    grid-template-columns: 216px minmax(0, 360px) 100px;
+    grid-template-columns: 120px minmax(0, 360px) 156px 100px;
+}
+
+.user-search .leave-search-button {
+    grid-column: 4;
+    grid-row: 1;
+}
+
+.user-status-filters {
+    display: flex;
+    flex-direction: column;
+    grid-column: 3;
+    grid-row: 1;
+    gap: 4px;
+    height: 40px;
+}
+
+.user-status-filter {
+    flex: 1;
+    min-height: 0;
+    padding: 0 8px;
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    background: #FFFFFF;
+    color: #1E1E1E;
+    font: inherit;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.user-status-filter:hover {
+    background: #F0F0F0;
+}
+
+.user-status-filter-selected {
+    border-color: #007EC6;
+    background: #007EC6;
+    color: #FFFFFF;
+}
+
+.user-status-filter-selected:hover {
+    border-color: #006EAD;
+    background: #006EAD;
+}
+
+.user-status-filter:active {
+    border-color: #005F96;
+    background: #005F96;
+    color: #FFFFFF;
 }
 
 .user-list-actions {
@@ -8,12 +58,16 @@
     gap: 12px;
 }
 
+.user-table {
+    min-width: 800px;
+}
+
 .user-table th:nth-child(1) { width: 66px; }
-.user-table th:nth-child(2) { width: 116px; }
-.user-table th:nth-child(3) { width: 187px; }
-.user-table th:nth-child(4) { width: 191px; }
-.user-table th:nth-child(5) { width: 209px; }
-.user-table th:nth-child(6) { width: auto; }
+.user-table th:nth-child(2) { width: 150px; }
+.user-table th:nth-child(3) { width: auto; }
+.user-table th:nth-child(4) { width: 200px; }
+.user-table th:nth-child(5) { width: 200px; }
+.user-table th:nth-child(6) { width: 100px; }
 
 .user-table th:first-child,
 .user-table td:first-child {
@@ -128,7 +182,17 @@
 
 @media (max-width: 1200px) {
     .user-search {
-        grid-template-columns: minmax(0, 360px) 100px;
+        grid-template-columns: minmax(0, 360px) 156px 100px;
+    }
+
+    .user-search .leave-search-button {
+        grid-column: 3;
+        grid-row: 2;
+    }
+
+    .user-status-filters {
+        grid-column: 2;
+        grid-row: 2;
     }
 
     .user-list-actions .leave-add {

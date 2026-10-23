@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/functions/const.php';
 require_once __DIR__ . '/functions/message.php';
+require_once __DIR__ . '/functions/helpers.php';
 
 session_start();
 
@@ -15,13 +16,11 @@ if (isset($_SERVER['REQUEST_METHOD'])) {
 }
 if ($requestMethod !== 'GET' && $requestMethod !== 'HEAD' && $requestMethod !== 'POST') {
     header('Allow: GET, HEAD, POST');
-    http_response_code(405);
-    exit(MSG_METHOD_NOT_ALLOWED);
+    redirectToError(405);
 }
 
 require_once dirname(__DIR__) . '/index.php';
 require_once __DIR__ . '/functions/queries.php';
-require_once __DIR__ . '/functions/helpers.php';
 require_once __DIR__ . '/functions/catalogs.php';
 require_once __DIR__ . '/functions/leave_process.php';
 

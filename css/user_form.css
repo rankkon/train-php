@@ -148,12 +148,6 @@
     color: #BD0101;
 }
 
-.user-form-fields > .user-field-error {
-    margin: 0 0 12px;
-    overflow-wrap: anywhere;
-    line-height: 20px;
-}
-
 .user-form-actions {
     display: flex;
     flex: none;

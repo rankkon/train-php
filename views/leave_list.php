@@ -29,10 +29,6 @@ require dirname(__DIR__) . '/logic/leave_list_logic.php';
             <a href="leave_create.php" class="leave-add">Thêm mới đơn</a>
         </div>
 
-        <?php if (!empty($processErrors['general']) && empty($processPopup)): ?>
-            <p class="leave-process-error"><?= escapeHtml($processErrors['general']) ?></p>
-        <?php endif; ?>
-
         <div class="leave-table-container">
             <table class="leave-table leave-management-table">
                 <thead>
@@ -96,9 +92,6 @@ require dirname(__DIR__) . '/logic/leave_list_logic.php';
                     <button name="action" value="close_popup" class="popup-close" title="Đóng" formnovalidate></button>
                 </header>
                 <p class="popup-message"><?= escapeHtml(MSG_CONFIRM_APPROVE) ?></p>
-                <?php if (!empty($processErrors['general'])): ?>
-                    <p class="leave-process-error leave-popup-error"><?= escapeHtml($processErrors['general']) ?></p>
-                <?php endif; ?>
                 <div class="popup-actions">
                     <button name="action" value="confirm_approve" class="popup-button popup-confirm">OK</button>
                     <button name="action" value="close_popup" class="popup-button popup-cancel" formnovalidate>Cancel</button>
@@ -116,9 +109,6 @@ require dirname(__DIR__) . '/logic/leave_list_logic.php';
                     <button name="action" value="close_popup" class="popup-close" title="Đóng"></button>
                 </header>
                 <div class="leave-cancel-fields">
-                    <?php if (!empty($processErrors['general'])): ?>
-                        <p class="leave-process-error"><?= escapeHtml($processErrors['general']) ?></p>
-                    <?php endif; ?>
                     <label for="cancel-reason">Lý do hủy đơn <span class="leave-cancel-required">*</span></label>
                     <textarea id="cancel-reason" name="cancel_reason" class="leave-cancel-reason<?php if (!empty($processErrors['cancel_reason'])): ?> leave-field-error<?php endif; ?>" required><?= escapeHtml($cancelReason) ?></textarea>
                     <?php if (!empty($processErrors['cancel_reason'])): ?>

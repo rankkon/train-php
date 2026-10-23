@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/logic/functions/message.php';
+require_once __DIR__ . '/logic/functions/helpers.php';
+
+set_exception_handler('handleUnexpectedError');
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
@@ -35,6 +37,6 @@ try {
     $db = new mysqli($dbHost, $dbUser, $dbPassword, $dbName, $dbPort);
     $db->set_charset('utf8mb4');
 } catch (mysqli_sql_exception $error) {
-    http_response_code(500);
-    exit(MSG_DATABASE_CONNECTION_FAILED);
+    error_log($error->getMessage());
+    redirectToError();
 }
